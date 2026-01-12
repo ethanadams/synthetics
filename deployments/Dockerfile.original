@@ -1,0 +1,68 @@
+# Multi-stage Dockerfile for Storj Synthetics service
+
+# Stage 1: Build custom k6 binary
+FROM golang:alpine AS k6-builder
+
+RUN apk add --no-cache git
+
+# Install xk6
+RUN go install go.k6.io/xk6/cmd/xk6@latest
+
+WORKDIR /build
+
+# Copy entire source tree for module resolution
+COPY . .
+
+# Build k6 with Storj extension
+RUN xk6 build latest \
+    --with github.com/ethanadams/synthetics=/build \
+    --output /k6
+
+
+# Stage 2: Build synthetics service
+FROM golang:alpine AS service-builder
+
+RUN apk add --no-cache git
+
+WORKDIR /build
+
+# Copy Go module files
+COPY go.mod go.sum ./
+RUN go mod download
+
+# Copy source code
+COPY . .
+
+# Build the service with multi-arch support
+ARG TARGETOS
+ARG TARGETARCH
+RUN CGO_ENABLED=0 GOOS=${TARGETOS} GOARCH=${TARGETARCH} go build -o synthetics ./cmd/synthetics
+
+
+# Stage 3: Final runtime image
+FROM alpine:latest
+
+RUN apk add --no-cache ca-certificates curl
+
+# Copy k6 binary from k6-builder
+COPY --from=k6-builder /k6 /usr/local/bin/k6
+
+# Copy synthetics service binary
+COPY --from=service-builder /build/synthetics /app/synthetics
+
+# Copy test scripts
+COPY scripts/tests /app/scripts/tests
+
+# Create directories
+RUN mkdir -p /app/configs
+
+WORKDIR /app
+
+# Expose metrics port
+EXPOSE 8080
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+    CMD wget --no-verbose --tries=1 --spider http://localhost:8080/health || exit 1
+
+ENTRYPOINT ["/app/synthetics"]

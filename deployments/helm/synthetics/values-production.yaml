@@ -1,0 +1,115 @@
+# Production values for synthetics
+# Override with: helm install synthetics . -f values-production.yaml
+
+replicaCount: 2
+
+image:
+  repository: ethanjadams/synthetics
+  pullPolicy: Always
+  tag: "latest"
+
+resources:
+  limits:
+    cpu: 1000m
+    memory: 1Gi
+  requests:
+    cpu: 200m
+    memory: 256Mi
+
+storj:
+  # Use existing secret in production
+  existingSecret: "storj-credentials"
+  existingSecretKey: "access-grant"
+  bucket: "production-synthetics"
+
+config:
+  logging:
+    level: "info"
+    format: "json"
+
+  tests:
+    # Critical path monitoring
+    - name: "critical-upload"
+      schedule: "*/2 * * * *"  # Every 2 minutes
+      enabled: true
+      steps:
+        - name: "upload"
+          script: "/app/scripts/tests/upload.js"
+          timeout: "2m"
+          file_size: "1MB"  # Human-readable format
+          ttl_seconds: 3600
+        - name: "download"
+          script: "/app/scripts/tests/download.js"
+          timeout: "1m"
+        - name: "delete"
+          script: "/app/scripts/tests/delete.js"
+          timeout: "30s"
+
+    # Performance monitoring
+    - name: "large-file-test"
+      schedule: "*/15 * * * *"  # Every 15 minutes
+      enabled: true
+      steps:
+        - name: "upload"
+          script: "/app/scripts/tests/upload.js"
+          timeout: "5m"
+          file_size: "10MB"  # Human-readable format
+        - name: "download"
+          script: "/app/scripts/tests/download.js"
+          timeout: "3m"
+        - name: "delete"
+          script: "/app/scripts/tests/delete.js"
+          timeout: "1m"
+
+    # Canary monitoring
+    - name: "canary-check"
+      schedule: "*/5 * * * *"  # Every 5 minutes
+      enabled: true
+      filename: "canary-file.bin"
+      steps:
+        - name: "download"
+          script: "/app/scripts/tests/download.js"
+          timeout: "1m"
+
+    # Cleanup
+    - name: "cleanup-old-files"
+      schedule: "0 */6 * * *"  # Every 6 hours
+      enabled: true
+      steps:
+        - name: "cleanup"
+          script: "/app/scripts/tests/delete.js"
+          timeout: "5m"
+          max_age_minutes: 360  # 6 hours
+          max_delete: 100
+          file_prefix: "critical-upload"
+
+persistence:
+  # Test data is auto-generated at startup (seconds)
+  # Only enable if you have 100MB+ files or very frequent restarts
+  enabled: false
+  storageClass: "fast-ssd"
+  size: 5Gi
+
+autoscaling:
+  enabled: false  # Synthetics should typically run as single instance
+
+podDisruptionBudget:
+  enabled: true
+  minAvailable: 1
+
+affinity:
+  podAntiAffinity:
+    preferredDuringSchedulingIgnoredDuringExecution:
+    - weight: 100
+      podAffinityTerm:
+        labelSelector:
+          matchLabels:
+            app.kubernetes.io/name: synthetics
+        topologyKey: kubernetes.io/hostname
+
+priorityClassName: "high-priority"
+
+podAnnotations:
+  prometheus.io/scrape: "true"
+  prometheus.io/port: "8080"
+  prometheus.io/path: "/metrics"

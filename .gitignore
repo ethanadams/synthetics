@@ -1,0 +1,47 @@
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+synthetics
+
+# Test binary, built with `go test -c`
+*.test
+
+# Output of the go coverage tool
+*.out
+
+# Go workspace file
+go.work
+
+# Dependency directories
+vendor/
+
+# Custom k6 binary
+k6
+xk6
+
+# Config files with secrets
+configs/config.yaml
+
+# Docker volumes
+data/
+prometheus-data/
+grafana-data/
+
+# k6 output
+*.json
+!deployments/grafana/**/*.json
+/tmp/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db

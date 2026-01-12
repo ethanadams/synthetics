@@ -1,0 +1,58 @@
+# Development values for synthetics
+# Override with: helm install synthetics . -f values-dev.yaml
+
+replicaCount: 1
+
+image:
+  repository: ethanjadams/synthetics
+  pullPolicy: IfNotPresent
+  tag: "latest"
+
+resources:
+  limits:
+    cpu: 500m
+    memory: 512Mi
+  requests:
+    cpu: 50m
+    memory: 64Mi
+
+storj:
+  # Set via command line: --set storj.accessGrant="..."
+  accessGrant: ""
+  bucket: "dev-synthetics"
+
+config:
+  logging:
+    level: "debug"
+    format: "text"
+
+  tests:
+    # Fast feedback loop
+    - name: "quick-test"
+      schedule: "*/1 * * * *"  # Every minute
+      enabled: true
+      steps:
+        - name: "upload"
+          script: "/app/scripts/tests/upload.js"
+          timeout: "30s"
+          file_size: "100KB"  # Human-readable format
+        - name: "download"
+          script: "/app/scripts/tests/download.js"
+          timeout: "20s"
+        - name: "delete"
+          script: "/app/scripts/tests/delete.js"
+          timeout: "20s"
+
+persistence:
+  enabled: false  # Use ephemeral storage in dev
+
+autoscaling:
+  enabled: false
+
+podDisruptionBudget:
+  enabled: false
+
+podAnnotations:
+  prometheus.io/scrape: "true"
+  prometheus.io/port: "8080"
+  prometheus.io/path: "/metrics"

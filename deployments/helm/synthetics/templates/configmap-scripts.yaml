@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "synthetics.fullname" . }}-scripts
+  labels:
+    {{- include "synthetics.labels" . | nindent 4 }}
+data:
+  upload.js: |
+{{ .Files.Get "scripts/upload.js" | indent 4 }}
+  download.js: |
+{{ .Files.Get "scripts/download.js" | indent 4 }}
+  delete.js: |
+{{ .Files.Get "scripts/delete.js" | indent 4 }}
+  list_objects.js: |
+{{ .Files.Get "scripts/list_objects.js" | indent 4 }}

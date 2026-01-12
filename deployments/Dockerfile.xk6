@@ -1,0 +1,37 @@
+# Dockerfile for building custom k6 binary with Storj extension
+FROM golang:alpine AS builder
+
+RUN apk add --no-cache git
+
+# Install xk6
+RUN go install go.k6.io/xk6/cmd/xk6@latest
+
+# Set working directory
+WORKDIR /build
+
+# Copy Go module files
+COPY go.mod go.sum ./
+
+# Download dependencies
+RUN go mod download
+
+# Copy extension source and registration file
+COPY cmd/xk6-storj ./cmd/xk6-storj
+COPY register.go ./
+
+# Build k6 with Storj extension
+RUN xk6 build latest \
+    --with github.com/ethanadams/synthetics=/build \
+    --output /k6
+
+# Final minimal image with just the k6 binary
+FROM alpine:latest
+
+RUN apk add --no-cache ca-certificates curl
+
+COPY --from=builder /k6 /usr/local/bin/k6
+
+RUN chmod +x /usr/local/bin/k6
+
+ENTRYPOINT ["/usr/local/bin/k6"]
+CMD ["version"]

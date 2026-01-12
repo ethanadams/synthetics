@@ -1,0 +1,45 @@
+# Git
+.git
+.gitignore
+
+# Documentation (keep minimal docs)
+CLAUDE.md
+*.md
+!README.md
+
+# Build artifacts
+synthetics
+k6
+*.test
+*.out
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# CI/CD
+.github/
+
+# Temporary files
+/tmp/
+*.json
+
+# Local configs (example files are kept)
+configs/config.yaml
+
+# Kubernetes/Helm (not needed in container)
+deployments/helm/
+deployments/prometheus/
+deployments/grafana/
+deployments/docker-compose.yml
+deployments/DOCKER.md
+
+# Development
+vendor/

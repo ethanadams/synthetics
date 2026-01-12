@@ -1,0 +1,65 @@
+# syntax=docker/dockerfile:1
+# FAST build using pre-built k6 base image
+# Builds in ~30 seconds instead of 10+ minutes
+#
+# First time setup (one-time, ~10 minutes):
+#   DOCKER_BUILDKIT=1 docker build -f deployments/Dockerfile.k6-base -t ghcr.io/ethanadams/synthetics-k6:latest .
+#
+# Then use this Dockerfile for fast rebuilds (~30 seconds):
+#   DOCKER_BUILDKIT=1 docker build -f deployments/Dockerfile.fast .
+
+# Stage 1: Build synthetics service only
+FROM golang:1.25-alpine AS service-builder
+
+RUN apk add --no-cache git
+
+WORKDIR /build
+
+# Copy Go module files and download dependencies
+COPY go.mod go.sum ./
+RUN --mount=type=cache,target=/go/pkg/mod \
+    go mod download
+
+# Copy only source code needed for service build
+COPY cmd/synthetics ./cmd/synthetics
+COPY internal ./internal
+
+# Build the service
+ARG TARGETOS=linux
+ARG TARGETARCH=amd64
+RUN --mount=type=cache,target=/go/pkg/mod \
+    --mount=type=cache,target=/root/.cache/go-build \
+    CGO_ENABLED=0 GOOS=${TARGETOS} GOARCH=${TARGETARCH} \
+    go build -ldflags="-s -w" -o synthetics ./cmd/synthetics
+
+
+# Stage 2: Final runtime image
+FROM ghcr.io/ethanadams/synthetics-k6:latest AS k6-source
+
+# Stage 3: Assemble final image
+FROM alpine:latest
+
+RUN apk add --no-cache ca-certificates curl wget
+
+# Copy k6 binary from pre-built base
+COPY --from=k6-source /usr/local/bin/k6 /usr/local/bin/k6
+
+# Copy synthetics service binary
+COPY --from=service-builder /build/synthetics /app/synthetics
+
+# Copy test scripts
+COPY scripts/tests /app/scripts/tests
+
+# Create directories
+RUN mkdir -p /app/configs
+
+WORKDIR /app
+
+# Expose metrics port
+EXPOSE 8080
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+    CMD wget --no-verbose --tries=1 --spider http://localhost:8080/health || exit 1
+
+ENTRYPOINT ["/app/synthetics"]

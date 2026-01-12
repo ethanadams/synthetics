@@ -1,0 +1,39 @@
+# syntax=docker/dockerfile:1
+# Base image with pre-built k6+xk6-storj extension
+# Build once, reuse many times - only rebuild when extension changes
+
+FROM golang:1.25-alpine AS builder
+
+RUN apk add --no-cache git
+
+# Install xk6
+RUN go install go.k6.io/xk6/cmd/xk6@latest
+
+WORKDIR /build
+
+# Copy only what's needed for k6 extension
+COPY go.mod go.sum ./
+RUN --mount=type=cache,target=/go/pkg/mod \
+    go mod download
+
+COPY cmd/xk6-storj ./cmd/xk6-storj
+COPY register.go ./
+
+# Build k6 with Storj extension
+RUN --mount=type=cache,target=/go/pkg/mod \
+    --mount=type=cache,target=/root/.cache/go-build \
+    xk6 build latest \
+    --with github.com/ethanadams/synthetics=/build \
+    --output /k6
+
+# Minimal runtime image
+FROM alpine:latest
+
+RUN apk add --no-cache ca-certificates curl
+
+COPY --from=builder /k6 /usr/local/bin/k6
+
+RUN chmod +x /usr/local/bin/k6
+
+ENTRYPOINT ["/usr/local/bin/k6"]
+CMD ["version"]

@@ -1,0 +1,16 @@
+apiVersion: v2
+name: synthetics
+description: A Helm chart for Storj synthetic monitoring
+type: application
+version: 1.0.0
+appVersion: "1.0.0"
+keywords:
+  - storj
+  - synthetics
+  - monitoring
+  - k6
+maintainers:
+  - name: Storj Labs
+    email: support@storj.io
+sources:
+  - https://github.com/ethanadams/synthetics

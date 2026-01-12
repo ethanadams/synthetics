@@ -1,0 +1,32 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    monitor: 'storj-synthetics'
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets: []
+          # - 'alertmanager:9093'  # Uncomment if using Alertmanager
+
+rule_files:
+  - "alerts.yml"
+
+scrape_configs:
+  - job_name: 'storj-synthetics'
+    static_configs:
+      - targets: ['synthetics:8080']
+        labels:
+          service: 'storj-synthetics'
+          environment: 'production'
+          environment_name: 'local'
+    scrape_interval: 15s
+    scrape_timeout: 10s
+    metrics_path: '/metrics'
+
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+        labels:
+          service: 'prometheus'

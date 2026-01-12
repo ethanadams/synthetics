@@ -1,0 +1,252 @@
+# Default values for storj-synthetics
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+image:
+  repository: ghcr.io/ethanadams/synthetics
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: "latest"
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+podAnnotations:
+  prometheus.io/scrape: "true"
+  prometheus.io/port: "8080"
+  prometheus.io/path: "/metrics"
+
+podSecurityContext:
+  fsGroup: 2000
+  runAsNonRoot: true
+  runAsUser: 1000
+
+securityContext:
+  capabilities:
+    drop:
+    - ALL
+  readOnlyRootFilesystem: false
+  allowPrivilegeEscalation: false
+
+service:
+  type: ClusterIP
+  port: 8080
+  targetPort: 8080
+  annotations: {}
+
+# Ingress for Grafana dashboard access (optional)
+ingress:
+  enabled: false
+  className: "nginx"
+  annotations: {}
+    # cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    # kubernetes.io/tls-acme: "true"
+  hosts:
+    - host: synthetics.example.com
+      paths:
+        - path: /metrics
+          pathType: Prefix
+  tls: []
+  #  - secretName: synthetics-tls
+  #    hosts:
+  #      - synthetics.example.com
+
+resources:
+  limits:
+    cpu: 500m
+    memory: 512Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 3
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+# Storj configuration (for Uplink executor)
+storj:
+  # Access grant for Storj satellite
+  # Can be provided via existingSecret or directly
+  accessGrant: ""
+  bucket: "synthetics-test"
+
+  # Use existing secret for access grant
+  existingSecret: ""
+  existingSecretKey: "access-grant"
+
+# S3 Gateway configuration (for S3 executor)
+s3:
+  # S3-compatible gateway endpoint
+  endpoint: "https://gateway.storjshare.io"
+
+  # S3 credentials
+  # Can be provided via existingSecret or directly
+  accessKey: ""
+  secretKey: ""
+  region: "us-east-1"
+
+  # Use existing secret for S3 credentials
+  existingSecret: ""
+  existingSecretAccessKeyKey: "access-key"
+  existingSecretSecretKeyKey: "secret-key"
+
+# Synthetics test configuration
+config:
+  # Logging configuration
+  logging:
+    level: "info"
+    format: "json"
+
+  # Metrics configuration
+  metrics:
+    port: 8080
+    path: "/metrics"
+
+  # K6 configuration
+  k6:
+    binaryPath: "/usr/local/bin/k6"
+    outputFormat: "json"
+
+  # Jitter configuration (prevents thundering herd)
+  # Adds random delay before test/step execution to spread load
+  # Can be overridden at test and step levels
+  jitter:
+    enabled: false  # Global default: no jitter
+    max: "30s"      # Max jitter: duration ("30s") or percentage ("10%")
+
+  # Tests configuration
+  # These can be overridden or extended via values
+  #
+  # Executors:
+  #   - "uplink": Native Storj protocol via k6 + xk6-storj (requires script field)
+  #   - "s3": S3-compatible gateway via AWS SDK (no script needed)
+  #
+  # File sizes support human-readable format: "512KB", "5MB", "1GB" or raw bytes
+  tests:
+    # Example 1: Uplink executor test (native Storj protocol)
+    - name: "uplink-workflow"
+      schedule: "*/5 * * * *"
+      enabled: true
+      executor: "uplink"  # Uses k6 + xk6-storj extension (default)
+      # bucket: "custom-bucket"  # Optional: override global bucket
+      steps:
+        - name: "upload"
+          script: "/app/scripts/tests/upload.js"
+          timeout: "1m"
+          file_size: "512KB"  # Human-readable format
+        - name: "download"
+          script: "/app/scripts/tests/download.js"
+          timeout: "30s"
+        - name: "delete"
+          script: "/app/scripts/tests/delete.js"
+          timeout: "30s"
+
+    # Example 2: S3 executor test (S3-compatible gateway)
+    # Note: Requires s3.accessKey and s3.secretKey to be configured
+    - name: "s3-workflow"
+      schedule: "*/5 * * * *"
+      enabled: false  # Enable when S3 credentials are configured
+      executor: "s3"  # Uses native Go with AWS SDK
+      steps:
+        - name: "upload"
+          timeout: "1m"
+          file_size: "512KB"
+        - name: "download"
+          timeout: "30s"
+        - name: "delete"
+          timeout: "30s"
+
+    # Example 3: Test with jitter (prevents thundering herd)
+    # Jitter adds random delay before execution to spread load
+    # - name: "jitter-workflow"
+    #   schedule: "*/5 * * * *"
+    #   enabled: false
+    #   executor: "s3"
+    #   jitter:
+    #     enabled: true
+    #     max: "10%"  # 10% of 5 min interval = up to 30s random delay
+    #   steps:
+    #     - name: "upload"
+    #       timeout: "1m"
+    #       file_size: "512KB"
+    #       jitter:
+    #         enabled: true
+    #         max: "5s"  # Step-level override: fixed 0-5s delay
+    #     - name: "download"
+    #       timeout: "30s"
+    #       # Inherits test-level jitter (10%)
+    #     - name: "delete"
+    #       timeout: "30s"
+    #       jitter:
+    #         enabled: false  # Disable jitter for this step
+
+# Persistent volume for test data files
+# Note: Test data is auto-generated at startup (takes seconds)
+# Only enable if you have very large files (100MB+) or want faster restarts
+persistence:
+  enabled: false
+  storageClass: ""
+  accessMode: ReadWriteOnce
+  size: 1Gi
+  annotations: {}
+
+# Environment variables
+env: []
+  # - name: EXTRA_VAR
+  #   value: "value"
+
+# Additional volumes
+extraVolumes: []
+
+# Additional volume mounts
+extraVolumeMounts: []
+
+# Liveness probe configuration
+livenessProbe:
+  httpGet:
+    path: /health
+    port: 8080
+  initialDelaySeconds: 30
+  periodSeconds: 10
+  timeoutSeconds: 3
+  failureThreshold: 3
+
+# Readiness probe configuration
+readinessProbe:
+  httpGet:
+    path: /health
+    port: 8080
+  initialDelaySeconds: 10
+  periodSeconds: 5
+  timeoutSeconds: 3
+  failureThreshold: 3
+
+# Priority class name
+priorityClassName: ""
+
+# Pod disruption budget
+podDisruptionBudget:
+  enabled: false
+  minAvailable: 1
+  # maxUnavailable: 1

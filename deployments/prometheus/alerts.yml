@@ -1,0 +1,116 @@
+groups:
+  - name: storj_synthetics_alerts
+    interval: 30s
+    rules:
+      # Test execution alerts
+      - alert: SyntheticsTestFailing
+        expr: rate(synthetics_test_runs_total{status="failure"}[5m]) > 0
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Synthetics test {{ $labels.test_name }} is failing"
+          description: "Test {{ $labels.test_name }} has been failing for 5 minutes"
+
+      - alert: SyntheticsNoRecentTests
+        expr: time() - max(synthetics_test_duration_seconds) > 600
+        for: 10m
+        labels:
+          severity: critical
+        annotations:
+          summary: "No synthetic tests have run recently"
+          description: "No synthetic tests have completed in the last 10 minutes"
+
+      # Storj upload alerts
+      - alert: StorjUploadHighFailureRate
+        expr: rate(synth_operation_success_total{action="upload",status="failure"}[5m]) / rate(synth_operation_success_total{action="upload"}[5m]) > 0.1
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High Storj upload failure rate"
+          description: "Upload failure rate is {{ $value | humanizePercentage }} for test {{ $labels.test_name }}"
+
+      - alert: StorjUploadSlowness
+        expr: histogram_quantile(0.95, rate(synth_duration_seconds_bucket{action="upload"}[5m])) > 10
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Storj uploads are slow"
+          description: "95th percentile upload time is {{ $value }}s for test {{ $labels.test_name }} in bucket {{ $labels.bucket }}"
+
+      - alert: StorjUploadCriticalSlowness
+        expr: histogram_quantile(0.95, rate(synth_duration_seconds_bucket{action="upload"}[5m])) > 30
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Storj uploads are critically slow"
+          description: "95th percentile upload time is {{ $value }}s for test {{ $labels.test_name }} in bucket {{ $labels.bucket }}"
+
+      # Storj download alerts
+      - alert: StorjDownloadHighFailureRate
+        expr: rate(synth_operation_success_total{action="download",status="failure"}[5m]) / rate(synth_operation_success_total{action="download"}[5m]) > 0.1
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High Storj download failure rate"
+          description: "Download failure rate is {{ $value | humanizePercentage }} for test {{ $labels.test_name }}"
+
+      - alert: StorjDownloadSlowness
+        expr: histogram_quantile(0.95, rate(synth_duration_seconds_bucket{action="download"}[5m])) > 5
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Storj downloads are slow"
+          description: "95th percentile download time is {{ $value }}s for test {{ $labels.test_name }} in bucket {{ $labels.bucket }}"
+
+      - alert: StorjDownloadCriticalSlowness
+        expr: histogram_quantile(0.95, rate(synth_duration_seconds_bucket{action="download"}[5m])) > 15
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Storj downloads are critically slow"
+          description: "95th percentile download time is {{ $value }}s for test {{ $labels.test_name }} in bucket {{ $labels.bucket }}"
+
+      # Service health alerts
+      - alert: SyntheticsServiceDown
+        expr: up{job="storj-synthetics"} == 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Synthetics service is down"
+          description: "The Storj synthetics monitoring service has been down for more than 2 minutes"
+
+      - alert: SyntheticsServiceRestarts
+        expr: rate(synthetics_test_runs_total[5m]) == 0 and up{job="storj-synthetics"} == 1
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Synthetics service may be stuck"
+          description: "Service is up but no tests are running"
+
+      # Throughput alerts
+      - alert: StorjLowUploadThroughput
+        expr: rate(synth_bytes_total{action="upload"}[5m]) < 10000
+        for: 10m
+        labels:
+          severity: info
+        annotations:
+          summary: "Low upload throughput detected"
+          description: "Upload throughput is {{ $value | humanize }}B/s for test {{ $labels.test_name }}"
+
+      - alert: StorjLowDownloadThroughput
+        expr: rate(synth_bytes_total{action="download"}[5m]) < 10000
+        for: 10m
+        labels:
+          severity: info
+        annotations:
+          summary: "Low download throughput detected"
+          description: "Download throughput is {{ $value | humanize }}B/s for test {{ $labels.test_name }}"

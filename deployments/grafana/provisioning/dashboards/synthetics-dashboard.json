@@ -1,0 +1,2591 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "prometheus"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "id": 0,
+  "links": [],
+  "panels": [
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "id": 1,
+      "panels": [],
+      "title": "Performance Degradation Analysis",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "fillOpacity": 80,
+            "gradientMode": "scheme",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineWidth": 1,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "decimals": 1,
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "yellow",
+                "value": 10
+              },
+              {
+                "color": "red",
+                "value": 25
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 10,
+        "w": 8,
+        "x": 0,
+        "y": 1
+      },
+      "id": 2,
+      "options": {
+        "barRadius": 0,
+        "barWidth": 0.97,
+        "displayMode": "gradient",
+        "fullHighlight": false,
+        "groupWidth": 0.7,
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "minVizHeight": 10,
+        "minVizWidth": 0,
+        "orientation": "horizontal",
+        "showValue": "always",
+        "stacking": "none",
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        },
+        "xField": "Time Offset",
+        "xTickLabelRotation": 0,
+        "xTickLabelSpacing": 0
+      },
+      "pluginVersion": "12.3.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus"
+          },
+          "expr": "label_join(\n  histogram_quantile(0.5,\n    sum by (test_name, action, executor, le) (\n      rate(synth_duration_seconds_bucket{\n        environment_name=\"$environment_name\",\n        test_name=~\"$test_name\",\n        action=~\"$action\",\n        executor=~\"$executor\"\n      }[5m])\n    )\n  ),\n  \"label\", \" | \", \"test_name\", \"action\", \"executor\"\n)",
+          "format": "table",
+          "instant": true,
+          "legendFormat": "Current",
+          "refId": "Current"
+        },
+        {
+          "datasource": {
+            "type": "prometheus"
+          },
+          "expr": "label_join(\n  (\n    histogram_quantile(0.5,\n      sum by (test_name, action, executor, le) (\n        rate(synth_duration_seconds_bucket{\n          environment_name=\"$environment_name\",\n          test_name=~\"$test_name\",\n          action=~\"$action\",\n          executor=~\"$executor\"\n        }[5m])\n      )\n    )\n    /\n    histogram_quantile(0.5,\n      sum by (test_name, action, executor, le) (\n        rate(synth_duration_seconds_bucket{\n          environment_name=\"$environment_name\",\n          test_name=~\"$test_name\",\n          action=~\"$action\",\n          executor=~\"$executor\"\n        }[5m] offset 1h)\n      )\n    )\n    - 1\n  ) * 100,\n  \"label\", \" | \", \"test_name\", \"action\", \"executor\"\n)",
+          "format": "table",
+          "instant": true,
+          "legendFormat": "1h ago",
+          "refId": "vs1h"
+        },
+        {
+          "datasource": {
+            "type": "prometheus"
+          },
+          "expr": "label_join(\n  (\n    histogram_quantile(0.5,\n      sum by (test_name, action, executor, le) (\n        rate(synth_duration_seconds_bucket{\n          environment_name=\"$environment_name\",\n          test_name=~\"$test_name\",\n          action=~\"$action\",\n          executor=~\"$executor\"\n        }[5m])\n      )\n    )\n    /\n    histogram_quantile(0.5,\n      sum by (test_name, action, executor, le) (\n        rate(synth_duration_seconds_bucket{\n          environment_name=\"$environment_name\",\n          test_name=~\"$test_name\",\n          action=~\"$action\",\n          executor=~\"$executor\"\n        }[5m] offset 6h)\n      )\n    )\n    - 1\n  ) * 100,\n  \"label\", \" | \", \"test_name\", \"action\", \"executor\"\n)",
+          "format": "table",
+          "instant": true,
+          "legendFormat": "6h ago",
+          "refId": "vs6h"
+        },
+        {
+          "datasource": {
+            "type": "prometheus"
+          },
+          "expr": "label_join(\n  (\n    histogram_quantile(0.5,\n      sum by (test_name, action, executor, le) (\n        rate(synth_duration_seconds_bucket{\n          environment_name=\"$environment_name\",\n          test_name=~\"$test_name\",\n          action=~\"$action\",\n          executor=~\"$executor\"\n        }[5m])\n      )\n    )\n    /\n    histogram_quantile(0.5,\n      sum by (test_name, action, executor, le) (\n        rate(synth_duration_seconds_bucket{\n          environment_name=\"$environment_name\",\n          test_name=~\"$test_name\",\n          action=~\"$action\",\n          executor=~\"$executor\"\n        }[5m] offset 12h)\n      )\n    )\n    - 1\n  ) * 100,\n  \"label\", \" | \", \"test_name\", \"action\", \"executor\"\n)",
+          "format": "table",
+          "instant": true,
+          "legendFormat": "12h ago",
+          "refId": "vs12h"
+        },
+        {
+          "datasource": {
+            "type": "prometheus"
+          },
+          "expr": "label_join(\n  (\n    histogram_quantile(0.5,\n      sum by (test_name, action, executor, le) (\n        rate(synth_duration_seconds_bucket{\n          environment_name=\"$environment_name\",\n          test_name=~\"$test_name\",\n          action=~\"$action\",\n          executor=~\"$executor\"\n        }[5m])\n      )\n    )\n    /\n    histogram_quantile(0.5,\n      sum by (test_name, action, executor, le) (\n        rate(synth_duration_seconds_bucket{\n          environment_name=\"$environment_name\",\n          test_name=~\"$test_name\",\n          action=~\"$action\",\n          executor=~\"$executor\"\n        }[5m] offset 24h)\n      )\n    )\n    - 1\n  ) * 100,\n  \"label\", \" | \", \"test_name\", \"action\", \"executor\"\n)",
+          "format": "table",
+          "instant": true,
+          "legendFormat": "24h ago",
+          "refId": "vs24h"
+        },
+        {
+          "datasource": {
+            "type": "prometheus"
+          },
+          "expr": "label_join(\n  (\n    histogram_quantile(0.5,\n      sum by (test_name, action, executor, le) (\n        rate(synth_duration_seconds_bucket{\n          environment_name=\"$environment_name\",\n          test_name=~\"$test_name\",\n          action=~\"$action\",\n          executor=~\"$executor\"\n        }[5m])\n      )\n    )\n    /\n    histogram_quantile(0.5,\n      sum by (test_name, action, executor, le) (\n        rate(synth_duration_seconds_bucket{\n          environment_name=\"$environment_name\",\n          test_name=~\"$test_name\",\n          action=~\"$action\",\n          executor=~\"$executor\"\n        }[5m] offset 48h)\n      )\n    )\n    - 1\n  ) * 100,\n  \"label\", \" | \", \"test_name\", \"action\", \"executor\"\n)",
+          "format": "table",
+          "instant": true,
+          "legendFormat": "48h ago",
+          "refId": "vs48h"
+        }
+      ],
+      "title": "P50 Performance Degradation",
+      "transformations": [
+        {
+          "id": "merge",
+          "options": {}
+        },
+        {
+          "id": "sortBy",
+          "options": {
+            "fields": {},
+            "sort": [
+              {
+                "field": "label"
+              }
+            ]
+          }
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true,
+              "action": true,
+              "executor": true,
+              "test_name": true
+            },
+            "indexByName": {
+              "label": 0
+            },
+            "renameByName": {
+              "label": "Test | Operation"
+            }
+          }
+        }
+      ],
+      "type": "barchart"
+    },
+    {
+      "datasource": {
+        "type": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "fillOpacity": 80,
+            "gradientMode": "scheme",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineWidth": 1,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "decimals": 1,
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "yellow",
+                "value": 10
+              },
+              {
+                "color": "red",
+                "value": 25
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 10,
+        "w": 8,
+        "x": 8,
+        "y": 1
+      },
+      "id": 3,
+      "options": {
+        "barRadius": 0,
+        "barWidth": 0.97,
+        "displayMode": "gradient",
+        "fullHighlight": false,
+        "groupWidth": 0.7,
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "minVizHeight": 10,
+        "minVizWidth": 0,
+        "orientation": "horizontal",
+        "showValue": "always",
+        "stacking": "none",
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        },
+        "xField": "Time Offset",
+        "xTickLabelRotation": 0,
+        "xTickLabelSpacing": 0
+      },
+      "pluginVersion": "12.3.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus"
+          },
+          "expr": "label_join(\n  histogram_quantile(0.9,\n    sum by (test_name, action, executor, le) (\n      rate(synth_duration_seconds_bucket{\n        environment_name=\"$environment_name\",\n        test_name=~\"$test_name\",\n        action=~\"$action\",\n        executor=~\"$executor\"\n      }[5m])\n    )\n  ),\n  \"label\", \" | \", \"test_name\", \"action\", \"executor\"\n)",
+          "format": "table",
+          "instant": true,
+          "legendFormat": "Current",
+          "refId": "Current"
+        },
+        {
+          "datasource": {
+            "type": "prometheus"
+          },
+          "expr": "label_join(\n  (\n    histogram_quantile(0.9,\n      sum by (test_name, action, executor, le) (\n        rate(synth_duration_seconds_bucket{\n          environment_name=\"$environment_name\",\n          test_name=~\"$test_name\",\n          action=~\"$action\",\n          executor=~\"$executor\"\n        }[5m])\n      )\n    )\n    /\n    histogram_quantile(0.9,\n      sum by (test_name, action, executor, le) (\n        rate(synth_duration_seconds_bucket{\n          environment_name=\"$environment_name\",\n          test_name=~\"$test_name\",\n          action=~\"$action\",\n          executor=~\"$executor\"\n        }[5m] offset 1h)\n      )\n    )\n    - 1\n  ) * 100,\n  \"label\", \" | \", \"test_name\", \"action\", \"executor\"\n)",
+          "format": "table",
+          "instant": true,
+          "legendFormat": "1h ago",
+          "refId": "vs1h"
+        },
+        {
+          "datasource": {
+            "type": "prometheus"
+          },
+          "expr": "label_join(\n  (\n    histogram_quantile(0.9,\n      sum by (test_name, action, executor, le) (\n        rate(synth_duration_seconds_bucket{\n          environment_name=\"$environment_name\",\n          test_name=~\"$test_name\",\n          action=~\"$action\",\n          executor=~\"$executor\"\n        }[5m])\n      )\n    )\n    /\n    histogram_quantile(0.9,\n      sum by (test_name, action, executor, le) (\n        rate(synth_duration_seconds_bucket{\n          environment_name=\"$environment_name\",\n          test_name=~\"$test_name\",\n          action=~\"$action\",\n          executor=~\"$executor\"\n        }[5m] offset 6h)\n      )\n    )\n    - 1\n  ) * 100,\n  \"label\", \" | \", \"test_name\", \"action\", \"executor\"\n)",
+          "format": "table",
+          "instant": true,
+          "legendFormat": "6h ago",
+          "refId": "vs6h"
+        },
+        {
+          "datasource": {
+            "type": "prometheus"
+          },
+          "expr": "label_join(\n  (\n    histogram_quantile(0.9,\n      sum by (test_name, action, executor, le) (\n        rate(synth_duration_seconds_bucket{\n          environment_name=\"$environment_name\",\n          test_name=~\"$test_name\",\n          action=~\"$action\",\n          executor=~\"$executor\"\n        }[5m])\n      )\n    )\n    /\n    histogram_quantile(0.9,\n      sum by (test_name, action, executor, le) (\n        rate(synth_duration_seconds_bucket{\n          environment_name=\"$environment_name\",\n          test_name=~\"$test_name\",\n          action=~\"$action\",\n          executor=~\"$executor\"\n        }[5m] offset 12h)\n      )\n    )\n    - 1\n  ) * 100,\n  \"label\", \" | \", \"test_name\", \"action\", \"executor\"\n)",
+          "format": "table",
+          "instant": true,
+          "legendFormat": "12h ago",
+          "refId": "vs12h"
+        },
+        {
+          "datasource": {
+            "type": "prometheus"
+          },
+          "expr": "label_join(\n  (\n    histogram_quantile(0.9,\n      sum by (test_name, action, executor, le) (\n        rate(synth_duration_seconds_bucket{\n          environment_name=\"$environment_name\",\n          test_name=~\"$test_name\",\n          action=~\"$action\",\n          executor=~\"$executor\"\n        }[5m])\n      )\n    )\n    /\n    histogram_quantile(0.9,\n      sum by (test_name, action, executor, le) (\n        rate(synth_duration_seconds_bucket{\n          environment_name=\"$environment_name\",\n          test_name=~\"$test_name\",\n          action=~\"$action\",\n          executor=~\"$executor\"\n        }[5m] offset 24h)\n      )\n    )\n    - 1\n  ) * 100,\n  \"label\", \" | \", \"test_name\", \"action\", \"executor\"\n)",
+          "format": "table",
+          "instant": true,
+          "legendFormat": "24h ago",
+          "refId": "vs24h"
+        },
+        {
+          "datasource": {
+            "type": "prometheus"
+          },
+          "expr": "label_join(\n  (\n    histogram_quantile(0.9,\n      sum by (test_name, action, executor, le) (\n        rate(synth_duration_seconds_bucket{\n          environment_name=\"$environment_name\",\n          test_name=~\"$test_name\",\n          action=~\"$action\",\n          executor=~\"$executor\"\n        }[5m])\n      )\n    )\n    /\n    histogram_quantile(0.9,\n      sum by (test_name, action, executor, le) (\n        rate(synth_duration_seconds_bucket{\n          environment_name=\"$environment_name\",\n          test_name=~\"$test_name\",\n          action=~\"$action\",\n          executor=~\"$executor\"\n        }[5m] offset 48h)\n      )\n    )\n    - 1\n  ) * 100,\n  \"label\", \" | \", \"test_name\", \"action\", \"executor\"\n)",
+          "format": "table",
+          "instant": true,
+          "legendFormat": "48h ago",
+          "refId": "vs48h"
+        }
+      ],
+      "title": "P90 Performance Degradation",
+      "transformations": [
+        {
+          "id": "merge",
+          "options": {}
+        },
+        {
+          "id": "sortBy",
+          "options": {
+            "fields": {},
+            "sort": [
+              {
+                "field": "label"
+              }
+            ]
+          }
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true,
+              "action": true,
+              "executor": true,
+              "test_name": true
+            },
+            "indexByName": {
+              "label": 0
+            },
+            "renameByName": {
+              "label": "Test | Operation"
+            }
+          }
+        }
+      ],
+      "type": "barchart"
+    },
+    {
+      "datasource": {
+        "type": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "fillOpacity": 80,
+            "gradientMode": "scheme",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineWidth": 1,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "decimals": 1,
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "yellow",
+                "value": 10
+              },
+              {
+                "color": "red",
+                "value": 25
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 10,
+        "w": 8,
+        "x": 16,
+        "y": 1
+      },
+      "id": 4,
+      "options": {
+        "barRadius": 0,
+        "barWidth": 0.97,
+        "displayMode": "gradient",
+        "fullHighlight": false,
+        "groupWidth": 0.7,
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "minVizHeight": 10,
+        "minVizWidth": 0,
+        "orientation": "horizontal",
+        "showValue": "always",
+        "stacking": "none",
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        },
+        "xField": "Time Offset",
+        "xTickLabelRotation": 0,
+        "xTickLabelSpacing": 0
+      },
+      "pluginVersion": "12.3.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus"
+          },
+          "expr": "label_join(\n  histogram_quantile(0.95,\n    sum by (test_name, action, executor, le) (\n      rate(synth_duration_seconds_bucket{\n        environment_name=\"$environment_name\",\n        test_name=~\"$test_name\",\n        action=~\"$action\",\n        executor=~\"$executor\"\n      }[5m])\n    )\n  ),\n  \"label\", \" | \", \"test_name\", \"action\", \"executor\"\n)",
+          "format": "table",
+          "instant": true,
+          "legendFormat": "Current",
+          "refId": "Current"
+        },
+        {
+          "datasource": {
+            "type": "prometheus"
+          },
+          "expr": "label_join(\n  (\n    histogram_quantile(0.95,\n      sum by (test_name, action, executor, le) (\n        rate(synth_duration_seconds_bucket{\n          environment_name=\"$environment_name\",\n          test_name=~\"$test_name\",\n          action=~\"$action\",\n          executor=~\"$executor\"\n        }[5m])\n      )\n    )\n    /\n    histogram_quantile(0.95,\n      sum by (test_name, action, executor, le) (\n        rate(synth_duration_seconds_bucket{\n          environment_name=\"$environment_name\",\n          test_name=~\"$test_name\",\n          action=~\"$action\",\n          executor=~\"$executor\"\n        }[5m] offset 1h)\n      )\n    )\n    - 1\n  ) * 100,\n  \"label\", \" | \", \"test_name\", \"action\", \"executor\"\n)",
+          "format": "table",
+          "instant": true,
+          "legendFormat": "1h ago",
+          "refId": "vs1h"
+        },
+        {
+          "datasource": {
+            "type": "prometheus"
+          },
+          "expr": "label_join(\n  (\n    histogram_quantile(0.95,\n      sum by (test_name, action, executor, le) (\n        rate(synth_duration_seconds_bucket{\n          environment_name=\"$environment_name\",\n          test_name=~\"$test_name\",\n          action=~\"$action\",\n          executor=~\"$executor\"\n        }[5m])\n      )\n    )\n    /\n    histogram_quantile(0.95,\n      sum by (test_name, action, executor, le) (\n        rate(synth_duration_seconds_bucket{\n          environment_name=\"$environment_name\",\n          test_name=~\"$test_name\",\n          action=~\"$action\",\n          executor=~\"$executor\"\n        }[5m] offset 6h)\n      )\n    )\n    - 1\n  ) * 100,\n  \"label\", \" | \", \"test_name\", \"action\", \"executor\"\n)",
+          "format": "table",
+          "instant": true,
+          "legendFormat": "6h ago",
+          "refId": "vs6h"
+        },
+        {
+          "datasource": {
+            "type": "prometheus"
+          },
+          "expr": "label_join(\n  (\n    histogram_quantile(0.95,\n      sum by (test_name, action, executor, le) (\n        rate(synth_duration_seconds_bucket{\n          environment_name=\"$environment_name\",\n          test_name=~\"$test_name\",\n          action=~\"$action\",\n          executor=~\"$executor\"\n        }[5m])\n      )\n    )\n    /\n    histogram_quantile(0.95,\n      sum by (test_name, action, executor, le) (\n        rate(synth_duration_seconds_bucket{\n          environment_name=\"$environment_name\",\n          test_name=~\"$test_name\",\n          action=~\"$action\",\n          executor=~\"$executor\"\n        }[5m] offset 12h)\n      )\n    )\n    - 1\n  ) * 100,\n  \"label\", \" | \", \"test_name\", \"action\", \"executor\"\n)",
+          "format": "table",
+          "instant": true,
+          "legendFormat": "12h ago",
+          "refId": "vs12h"
+        },
+        {
+          "datasource": {
+            "type": "prometheus"
+          },
+          "expr": "label_join(\n  (\n    histogram_quantile(0.95,\n      sum by (test_name, action, executor, le) (\n        rate(synth_duration_seconds_bucket{\n          environment_name=\"$environment_name\",\n          test_name=~\"$test_name\",\n          action=~\"$action\",\n          executor=~\"$executor\"\n        }[5m])\n      )\n    )\n    /\n    histogram_quantile(0.95,\n      sum by (test_name, action, executor, le) (\n        rate(synth_duration_seconds_bucket{\n          environment_name=\"$environment_name\",\n          test_name=~\"$test_name\",\n          action=~\"$action\",\n          executor=~\"$executor\"\n        }[5m] offset 24h)\n      )\n    )\n    - 1\n  ) * 100,\n  \"label\", \" | \", \"test_name\", \"action\", \"executor\"\n)",
+          "format": "table",
+          "instant": true,
+          "legendFormat": "24h ago",
+          "refId": "vs24h"
+        },
+        {
+          "datasource": {
+            "type": "prometheus"
+          },
+          "expr": "label_join(\n  (\n    histogram_quantile(0.95,\n      sum by (test_name, action, executor, le) (\n        rate(synth_duration_seconds_bucket{\n          environment_name=\"$environment_name\",\n          test_name=~\"$test_name\",\n          action=~\"$action\",\n          executor=~\"$executor\"\n        }[5m])\n      )\n    )\n    /\n    histogram_quantile(0.95,\n      sum by (test_name, action, executor, le) (\n        rate(synth_duration_seconds_bucket{\n          environment_name=\"$environment_name\",\n          test_name=~\"$test_name\",\n          action=~\"$action\",\n          executor=~\"$executor\"\n        }[5m] offset 48h)\n      )\n    )\n    - 1\n  ) * 100,\n  \"label\", \" | \", \"test_name\", \"action\", \"executor\"\n)",
+          "format": "table",
+          "instant": true,
+          "legendFormat": "48h ago",
+          "refId": "vs48h"
+        }
+      ],
+      "title": "P95 Performance Degradation",
+      "transformations": [
+        {
+          "id": "merge",
+          "options": {}
+        },
+        {
+          "id": "sortBy",
+          "options": {
+            "fields": {},
+            "sort": [
+              {
+                "field": "label"
+              }
+            ]
+          }
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true,
+              "action": true,
+              "executor": true,
+              "test_name": true
+            },
+            "indexByName": {
+              "label": 0
+            },
+            "renameByName": {
+              "label": "Test | Operation"
+            }
+          }
+        }
+      ],
+      "type": "barchart"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 11
+      },
+      "id": 12,
+      "panels": [],
+      "title": "Degradation Analysis - Table View",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "mode": "gradient",
+              "type": "color-background"
+            },
+            "filterable": true,
+            "footer": {
+              "reducers": []
+            },
+            "inspect": false
+          },
+          "decimals": 1,
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "yellow",
+                "value": 10
+              },
+              {
+                "color": "red",
+                "value": 25
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Test"
+            },
+            "properties": [
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "auto"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Action"
+            },
+            "properties": [
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "auto"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Executor"
+            },
+            "properties": [
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "auto"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "P50 (s)"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "s"
+              },
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "auto"
+                }
+              },
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "green",
+                      "value": 0
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "P95 (s)"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "s"
+              },
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "auto"
+                }
+              },
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "green",
+                      "value": 0
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "P99 (s)"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "s"
+              },
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "auto"
+                }
+              },
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "green",
+                      "value": 0
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 10,
+        "w": 24,
+        "x": 0,
+        "y": 12
+      },
+      "id": 13,
+      "options": {
+        "cellHeight": "sm",
+        "showHeader": true,
+        "sortBy": [
+          {
+            "desc": true,
+            "displayName": "vs 1h %"
+          }
+        ]
+      },
+      "pluginVersion": "12.3.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus"
+          },
+          "expr": "histogram_quantile(0.50,\n  sum by (test_name, action, executor, le) (\n    rate(synth_duration_seconds_bucket{\n      environment_name=\"$environment_name\",\n      test_name=~\"$test_name\",\n      action=~\"$action\",\n      executor=~\"$executor\"\n    }[5m])\n  )\n)",
+          "format": "table",
+          "instant": true,
+          "refId": "P50"
+        },
+        {
+          "datasource": {
+            "type": "prometheus"
+          },
+          "expr": "histogram_quantile(0.95,\n  sum by (test_name, action, executor, le) (\n    rate(synth_duration_seconds_bucket{\n      environment_name=\"$environment_name\",\n      test_name=~\"$test_name\",\n      action=~\"$action\",\n      executor=~\"$executor\"\n    }[5m])\n  )\n)",
+          "format": "table",
+          "instant": true,
+          "refId": "P95"
+        },
+        {
+          "datasource": {
+            "type": "prometheus"
+          },
+          "expr": "histogram_quantile(0.99,\n  sum by (test_name, action, executor, le) (\n    rate(synth_duration_seconds_bucket{\n      environment_name=\"$environment_name\",\n      test_name=~\"$test_name\",\n      action=~\"$action\",\n      executor=~\"$executor\"\n    }[5m])\n  )\n)",
+          "format": "table",
+          "instant": true,
+          "refId": "P99"
+        },
+        {
+          "datasource": {
+            "type": "prometheus"
+          },
+          "expr": "(\n  histogram_quantile(0.50,\n    sum by (test_name, action, executor, le) (\n      rate(synth_duration_seconds_bucket{\n        environment_name=\"$environment_name\",\n        test_name=~\"$test_name\",\n        action=~\"$action\",\n        executor=~\"$executor\"\n      }[5m])\n    )\n  )\n  /\n  histogram_quantile(0.50,\n    sum by (test_name, action, executor, le) (\n      rate(synth_duration_seconds_bucket{\n        environment_name=\"$environment_name\",\n        test_name=~\"$test_name\",\n        action=~\"$action\",\n        executor=~\"$executor\"\n      }[5m] offset 1h)\n    )\n  )\n  - 1\n) * 100",
+          "format": "table",
+          "instant": true,
+          "refId": "vs1h"
+        },
+        {
+          "datasource": {
+            "type": "prometheus"
+          },
+          "expr": "(\n  histogram_quantile(0.50,\n    sum by (test_name, action, executor, le) (\n      rate(synth_duration_seconds_bucket{\n        environment_name=\"$environment_name\",\n        test_name=~\"$test_name\",\n        action=~\"$action\",\n        executor=~\"$executor\"\n      }[5m])\n    )\n  )\n  /\n  histogram_quantile(0.50,\n    sum by (test_name, action, executor, le) (\n      rate(synth_duration_seconds_bucket{\n        environment_name=\"$environment_name\",\n        test_name=~\"$test_name\",\n        action=~\"$action\",\n        executor=~\"$executor\"\n      }[5m] offset 24h)\n    )\n  )\n  - 1\n) * 100",
+          "format": "table",
+          "instant": true,
+          "refId": "vs24h"
+        },
+        {
+          "datasource": {
+            "type": "prometheus"
+          },
+          "expr": "(\n  histogram_quantile(0.50,\n    sum by (test_name, action, executor, le) (\n      rate(synth_duration_seconds_bucket{\n        environment_name=\"$environment_name\",\n        test_name=~\"$test_name\",\n        action=~\"$action\",\n        executor=~\"$executor\"\n      }[5m])\n    )\n  )\n  /\n  histogram_quantile(0.50,\n    sum by (test_name, action, executor, le) (\n      rate(synth_duration_seconds_bucket{\n        environment_name=\"$environment_name\",\n        test_name=~\"$test_name\",\n        action=~\"$action\",\n        executor=~\"$executor\"\n      }[5m] offset 7d)\n    )\n  )\n  - 1\n) * 100",
+          "format": "table",
+          "instant": true,
+          "refId": "vs7d"
+        }
+      ],
+      "title": "Degradation Table - Current Values & % Change",
+      "transformations": [
+        {
+          "id": "merge",
+          "options": {}
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true
+            },
+            "indexByName": {
+              "Value #P50": 3,
+              "Value #P95": 4,
+              "Value #P99": 5,
+              "Value #vs1h": 6,
+              "Value #vs24h": 7,
+              "Value #vs7d": 8,
+              "action": 1,
+              "executor": 2,
+              "test_name": 0
+            },
+            "renameByName": {
+              "Value #P50": "P50 (s)",
+              "Value #P95": "P95 (s)",
+              "Value #P99": "P99 (s)",
+              "Value #vs1h": "vs 1h %",
+              "Value #vs24h": "vs 24h %",
+              "Value #vs7d": "vs 7d %",
+              "action": "Action",
+              "executor": "Executor",
+              "test_name": "Test"
+            }
+          }
+        }
+      ],
+      "type": "table"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 22
+      },
+      "id": 14,
+      "panels": [],
+      "title": "Degradation Analysis - Stat Panels",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "decimals": 1,
+          "mappings": [
+            {
+              "options": {
+                "match": "null",
+                "result": {
+                  "text": "N/A"
+                }
+              },
+              "type": "special"
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "yellow",
+                "value": 10
+              },
+              {
+                "color": "red",
+                "value": 25
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 4,
+        "x": 0,
+        "y": 23
+      },
+      "id": 15,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "12.3.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus"
+          },
+          "expr": "avg(\n  (\n    histogram_quantile(0.50,\n      sum by (test_name, action, executor, le) (\n        rate(synth_duration_seconds_bucket{\n          environment_name=\"$environment_name\",\n          test_name=~\"$test_name\",\n          action=~\"$action\",\n          executor=~\"$executor\"\n        }[5m])\n      )\n    )\n    /\n    histogram_quantile(0.50,\n      sum by (test_name, action, executor, le) (\n        rate(synth_duration_seconds_bucket{\n          environment_name=\"$environment_name\",\n          test_name=~\"$test_name\",\n          action=~\"$action\",\n          executor=~\"$executor\"\n        }[5m] offset 1h)\n      )\n    )\n    - 1\n  ) * 100\n)",
+          "refId": "A"
+        }
+      ],
+      "title": "P50 vs 1h ago",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "decimals": 1,
+          "mappings": [
+            {
+              "options": {
+                "match": "null",
+                "result": {
+                  "text": "N/A"
+                }
+              },
+              "type": "special"
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "yellow",
+                "value": 10
+              },
+              {
+                "color": "red",
+                "value": 25
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 4,
+        "x": 4,
+        "y": 23
+      },
+      "id": 16,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "12.3.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus"
+          },
+          "expr": "avg(\n  (\n    histogram_quantile(0.50,\n      sum by (test_name, action, executor, le) (\n        rate(synth_duration_seconds_bucket{\n          environment_name=\"$environment_name\",\n          test_name=~\"$test_name\",\n          action=~\"$action\",\n          executor=~\"$executor\"\n        }[5m])\n      )\n    )\n    /\n    histogram_quantile(0.50,\n      sum by (test_name, action, executor, le) (\n        rate(synth_duration_seconds_bucket{\n          environment_name=\"$environment_name\",\n          test_name=~\"$test_name\",\n          action=~\"$action\",\n          executor=~\"$executor\"\n        }[5m] offset 6h)\n      )\n    )\n    - 1\n  ) * 100\n)",
+          "refId": "A"
+        }
+      ],
+      "title": "P50 vs 6h ago",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "decimals": 1,
+          "mappings": [
+            {
+              "options": {
+                "match": "null",
+                "result": {
+                  "text": "N/A"
+                }
+              },
+              "type": "special"
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "yellow",
+                "value": 10
+              },
+              {
+                "color": "red",
+                "value": 25
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 4,
+        "x": 8,
+        "y": 23
+      },
+      "id": 17,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "12.3.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus"
+          },
+          "expr": "avg(\n  (\n    histogram_quantile(0.50,\n      sum by (test_name, action, executor, le) (\n        rate(synth_duration_seconds_bucket{\n          environment_name=\"$environment_name\",\n          test_name=~\"$test_name\",\n          action=~\"$action\",\n          executor=~\"$executor\"\n        }[5m])\n      )\n    )\n    /\n    histogram_quantile(0.50,\n      sum by (test_name, action, executor, le) (\n        rate(synth_duration_seconds_bucket{\n          environment_name=\"$environment_name\",\n          test_name=~\"$test_name\",\n          action=~\"$action\",\n          executor=~\"$executor\"\n        }[5m] offset 12h)\n      )\n    )\n    - 1\n  ) * 100\n)",
+          "refId": "A"
+        }
+      ],
+      "title": "P50 vs 12h ago",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "decimals": 1,
+          "mappings": [
+            {
+              "options": {
+                "match": "null",
+                "result": {
+                  "text": "N/A"
+                }
+              },
+              "type": "special"
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "yellow",
+                "value": 10
+              },
+              {
+                "color": "red",
+                "value": 25
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 4,
+        "x": 12,
+        "y": 23
+      },
+      "id": 18,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "12.3.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus"
+          },
+          "expr": "avg(\n  (\n    histogram_quantile(0.50,\n      sum by (test_name, action, executor, le) (\n        rate(synth_duration_seconds_bucket{\n          environment_name=\"$environment_name\",\n          test_name=~\"$test_name\",\n          action=~\"$action\",\n          executor=~\"$executor\"\n        }[5m])\n      )\n    )\n    /\n    histogram_quantile(0.50,\n      sum by (test_name, action, executor, le) (\n        rate(synth_duration_seconds_bucket{\n          environment_name=\"$environment_name\",\n          test_name=~\"$test_name\",\n          action=~\"$action\",\n          executor=~\"$executor\"\n        }[5m] offset 24h)\n      )\n    )\n    - 1\n  ) * 100\n)",
+          "refId": "A"
+        }
+      ],
+      "title": "P50 vs 24h ago",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "decimals": 1,
+          "mappings": [
+            {
+              "options": {
+                "match": "null",
+                "result": {
+                  "text": "N/A"
+                }
+              },
+              "type": "special"
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "yellow",
+                "value": 10
+              },
+              {
+                "color": "red",
+                "value": 25
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 4,
+        "x": 16,
+        "y": 23
+      },
+      "id": 19,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "12.3.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus"
+          },
+          "expr": "avg(\n  (\n    histogram_quantile(0.50,\n      sum by (test_name, action, executor, le) (\n        rate(synth_duration_seconds_bucket{\n          environment_name=\"$environment_name\",\n          test_name=~\"$test_name\",\n          action=~\"$action\",\n          executor=~\"$executor\"\n        }[5m])\n      )\n    )\n    /\n    histogram_quantile(0.50,\n      sum by (test_name, action, executor, le) (\n        rate(synth_duration_seconds_bucket{\n          environment_name=\"$environment_name\",\n          test_name=~\"$test_name\",\n          action=~\"$action\",\n          executor=~\"$executor\"\n        }[5m] offset 48h)\n      )\n    )\n    - 1\n  ) * 100\n)",
+          "refId": "A"
+        }
+      ],
+      "title": "P50 vs 48h ago",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "decimals": 1,
+          "mappings": [
+            {
+              "options": {
+                "match": "null",
+                "result": {
+                  "text": "N/A"
+                }
+              },
+              "type": "special"
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "yellow",
+                "value": 10
+              },
+              {
+                "color": "red",
+                "value": 25
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 4,
+        "x": 20,
+        "y": 23
+      },
+      "id": 20,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "12.3.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus"
+          },
+          "expr": "avg(\n  (\n    histogram_quantile(0.50,\n      sum by (test_name, action, executor, le) (\n        rate(synth_duration_seconds_bucket{\n          environment_name=\"$environment_name\",\n          test_name=~\"$test_name\",\n          action=~\"$action\",\n          executor=~\"$executor\"\n        }[5m])\n      )\n    )\n    /\n    histogram_quantile(0.50,\n      sum by (test_name, action, executor, le) (\n        rate(synth_duration_seconds_bucket{\n          environment_name=\"$environment_name\",\n          test_name=~\"$test_name\",\n          action=~\"$action\",\n          executor=~\"$executor\"\n        }[5m] offset 7d)\n      )\n    )\n    - 1\n  ) * 100\n)",
+          "refId": "A"
+        }
+      ],
+      "title": "P50 vs 7d ago",
+      "type": "stat"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 28
+      },
+      "id": 21,
+      "panels": [],
+      "title": "Degradation Analysis - Time Series",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": true,
+            "axisColorMode": "text",
+            "axisLabel": "% Change (positive = slower)",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 10,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "showValues": false,
+            "spanNulls": true,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "line+area"
+            }
+          },
+          "decimals": 1,
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "transparent",
+                "value": 0
+              },
+              {
+                "color": "yellow",
+                "value": 10
+              },
+              {
+                "color": "red",
+                "value": 25
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 10,
+        "w": 12,
+        "x": 0,
+        "y": 29
+      },
+      "id": 22,
+      "options": {
+        "legend": {
+          "calcs": [
+            "last",
+            "min",
+            "max"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "pluginVersion": "12.3.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus"
+          },
+          "expr": "(\n  histogram_quantile(0.50,\n    sum by (test_name, action, executor, le) (\n      rate(synth_duration_seconds_bucket{\n        environment_name=\"$environment_name\",\n        test_name=~\"$test_name\",\n        action=~\"$action\",\n        executor=~\"$executor\"\n      }[$__rate_interval])\n    )\n  )\n  /\n  histogram_quantile(0.50,\n    sum by (test_name, action, executor, le) (\n      rate(synth_duration_seconds_bucket{\n        environment_name=\"$environment_name\",\n        test_name=~\"$test_name\",\n        action=~\"$action\",\n        executor=~\"$executor\"\n      }[$__rate_interval] offset 1h)\n    )\n  )\n  - 1\n) * 100",
+          "legendFormat": "{{test_name}} - {{action}} (vs 1h)",
+          "refId": "A"
+        }
+      ],
+      "title": "Rolling P50 Degradation vs 1h Ago",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": true,
+            "axisColorMode": "text",
+            "axisLabel": "% Change (positive = slower)",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 10,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "showValues": false,
+            "spanNulls": true,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "line+area"
+            }
+          },
+          "decimals": 1,
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "transparent",
+                "value": 0
+              },
+              {
+                "color": "yellow",
+                "value": 10
+              },
+              {
+                "color": "red",
+                "value": 25
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 10,
+        "w": 12,
+        "x": 12,
+        "y": 29
+      },
+      "id": 23,
+      "options": {
+        "legend": {
+          "calcs": [
+            "last",
+            "min",
+            "max"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "pluginVersion": "12.3.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus"
+          },
+          "expr": "(\n  histogram_quantile(0.50,\n    sum by (test_name, action, executor, le) (\n      rate(synth_duration_seconds_bucket{\n        environment_name=\"$environment_name\",\n        test_name=~\"$test_name\",\n        action=~\"$action\",\n        executor=~\"$executor\"\n      }[$__rate_interval])\n    )\n  )\n  /\n  histogram_quantile(0.50,\n    sum by (test_name, action, executor, le) (\n      rate(synth_duration_seconds_bucket{\n        environment_name=\"$environment_name\",\n        test_name=~\"$test_name\",\n        action=~\"$action\",\n        executor=~\"$executor\"\n      }[$__rate_interval] offset 24h)\n    )\n  )\n  - 1\n) * 100",
+          "legendFormat": "{{test_name}} - {{action}} (vs 24h)",
+          "refId": "A"
+        }
+      ],
+      "title": "Rolling P50 Degradation vs 24h Ago",
+      "type": "timeseries"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 39
+      },
+      "id": 24,
+      "panels": [],
+      "title": "Degradation Analysis - Heatmap",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "scaleDistribution": {
+              "type": "linear"
+            }
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 10,
+        "w": 24,
+        "x": 0,
+        "y": 40
+      },
+      "id": 25,
+      "options": {
+        "calculate": false,
+        "cellGap": 2,
+        "cellValues": {
+          "decimals": 1
+        },
+        "color": {
+          "exponent": 0.5,
+          "fill": "dark-orange",
+          "mode": "scheme",
+          "reverse": false,
+          "scale": "exponential",
+          "scheme": "RdYlGn",
+          "steps": 64
+        },
+        "exemplars": {
+          "color": "rgba(255,0,255,0.7)"
+        },
+        "filterValues": {
+          "le": 1e-9
+        },
+        "legend": {
+          "show": true
+        },
+        "rowsFrame": {
+          "layout": "auto"
+        },
+        "showValue": "always",
+        "tooltip": {
+          "mode": "single",
+          "showColorScale": false,
+          "yHistogram": false
+        },
+        "yAxis": {
+          "axisPlacement": "left",
+          "reverse": false
+        }
+      },
+      "pluginVersion": "12.3.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus"
+          },
+          "expr": "(\n  histogram_quantile(0.50,\n    sum by (test_name, action, executor, le) (\n      rate(synth_duration_seconds_bucket{\n        environment_name=\"$environment_name\",\n        test_name=~\"$test_name\",\n        action=~\"$action\",\n        executor=~\"$executor\"\n      }[5m])\n    )\n  )\n  /\n  histogram_quantile(0.50,\n    sum by (test_name, action, executor, le) (\n      rate(synth_duration_seconds_bucket{\n        environment_name=\"$environment_name\",\n        test_name=~\"$test_name\",\n        action=~\"$action\",\n        executor=~\"$executor\"\n      }[5m] offset 1h)\n    )\n  )\n  - 1\n) * 100",
+          "format": "time_series",
+          "legendFormat": "{{test_name}}-{{action}}-{{executor}}",
+          "refId": "A"
+        }
+      ],
+      "title": "P50 Degradation Heatmap (vs 1h ago)",
+      "type": "heatmap"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 50
+      },
+      "id": 5,
+      "panels": [],
+      "title": "Current Performance Metrics",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "footer": {
+              "reducers": []
+            },
+            "inspect": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "yellow",
+                "value": 5
+              },
+              {
+                "color": "red",
+                "value": 10
+              }
+            ]
+          },
+          "unit": "s"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Success Rate %"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "percent"
+              },
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "red",
+                      "value": 0
+                    },
+                    {
+                      "color": "yellow",
+                      "value": 95
+                    },
+                    {
+                      "color": "green",
+                      "value": 99
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Ops/min"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "ops"
+              },
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "blue",
+                      "value": 0
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 51
+      },
+      "id": 6,
+      "options": {
+        "cellHeight": "sm",
+        "showHeader": true,
+        "sortBy": []
+      },
+      "pluginVersion": "12.3.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus"
+          },
+          "expr": "histogram_quantile(0.50,\n  sum by (test_name, action, executor, le) (\n    rate(synth_duration_seconds_bucket{\n      environment_name=\"$environment_name\",\n      test_name=~\"$test_name\",\n      action=~\"$action\",\n      executor=~\"$executor\"\n    }[5m])\n  )\n)",
+          "format": "table",
+          "instant": true,
+          "refId": "P50"
+        },
+        {
+          "datasource": {
+            "type": "prometheus"
+          },
+          "expr": "histogram_quantile(0.90,\n  sum by (test_name, action, executor, le) (\n    rate(synth_duration_seconds_bucket{\n      environment_name=\"$environment_name\",\n      test_name=~\"$test_name\",\n      action=~\"$action\",\n      executor=~\"$executor\"\n    }[5m])\n  )\n)",
+          "format": "table",
+          "instant": true,
+          "refId": "P90"
+        },
+        {
+          "datasource": {
+            "type": "prometheus"
+          },
+          "expr": "histogram_quantile(0.95,\n  sum by (test_name, action, executor, le) (\n    rate(synth_duration_seconds_bucket{\n      environment_name=\"$environment_name\",\n      test_name=~\"$test_name\",\n      action=~\"$action\",\n      executor=~\"$executor\"\n    }[5m])\n  )\n)",
+          "format": "table",
+          "instant": true,
+          "refId": "P95"
+        },
+        {
+          "datasource": {
+            "type": "prometheus"
+          },
+          "expr": "sum by (test_name, action, executor) (\n  rate(synth_operation_success_total{\n    environment_name=\"$environment_name\",\n    test_name=~\"$test_name\",\n    action=~\"$action\",\n    executor=~\"$executor\",\n    status=\"success\"\n  }[5m])\n) / sum by (test_name, action, executor) (\n  rate(synth_operation_success_total{\n    environment_name=\"$environment_name\",\n    test_name=~\"$test_name\",\n    action=~\"$action\",\n    executor=~\"$executor\"\n  }[5m])\n) * 100",
+          "format": "table",
+          "instant": true,
+          "refId": "SuccessRate"
+        },
+        {
+          "datasource": {
+            "type": "prometheus"
+          },
+          "expr": "sum by (test_name, action, executor) (\n  rate(synth_operation_count_total{\n    environment_name=\"$environment_name\",\n    test_name=~\"$test_name\",\n    action=~\"$action\",\n    executor=~\"$executor\"\n  }[5m])\n) * 60",
+          "format": "table",
+          "instant": true,
+          "refId": "OpsPerMin"
+        }
+      ],
+      "title": "Current Performance Summary",
+      "transformations": [
+        {
+          "id": "merge",
+          "options": {}
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true
+            },
+            "indexByName": {
+              "Value #OpsPerMin": 7,
+              "Value #P50": 3,
+              "Value #P90": 4,
+              "Value #P95": 5,
+              "Value #SuccessRate": 6,
+              "action": 1,
+              "executor": 2,
+              "test_name": 0
+            },
+            "renameByName": {
+              "Value #OpsPerMin": "Ops/min",
+              "Value #P50": "P50 (s)",
+              "Value #P90": "P90 (s)",
+              "Value #P95": "P95 (s)",
+              "Value #SuccessRate": "Success Rate %",
+              "action": "Action",
+              "executor": "Executor",
+              "test_name": "Test"
+            }
+          }
+        }
+      ],
+      "type": "table"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 59
+      },
+      "id": 7,
+      "panels": [],
+      "title": "Performance Trends Over Time",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 10,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "showValues": false,
+            "spanNulls": true,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "s"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*p50.*"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "green",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*p95.*"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "yellow",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*p99.*"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "red",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 60
+      },
+      "id": 8,
+      "options": {
+        "legend": {
+          "calcs": [
+            "last",
+            "mean"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "12.3.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus"
+          },
+          "expr": "histogram_quantile(0.50,\n  sum by (test_name, action, executor, le) (\n    rate(synth_duration_seconds_bucket{\n      environment_name=\"$environment_name\",\n      test_name=~\"$test_name\",\n      action=~\"$action\",\n      executor=~\"$executor\"\n    }[$__rate_interval])\n  )\n)",
+          "legendFormat": "{{test_name}} - {{action}} - p50",
+          "refId": "P50"
+        },
+        {
+          "datasource": {
+            "type": "prometheus"
+          },
+          "expr": "histogram_quantile(0.95,\n  sum by (test_name, action, executor, le) (\n    rate(synth_duration_seconds_bucket{\n      environment_name=\"$environment_name\",\n      test_name=~\"$test_name\",\n      action=~\"$action\",\n      executor=~\"$executor\"\n    }[$__rate_interval])\n  )\n)",
+          "legendFormat": "{{test_name}} - {{action}} - p95",
+          "refId": "P95"
+        },
+        {
+          "datasource": {
+            "type": "prometheus"
+          },
+          "expr": "histogram_quantile(0.99,\n  sum by (test_name, action, executor, le) (\n    rate(synth_duration_seconds_bucket{\n      environment_name=\"$environment_name\",\n      test_name=~\"$test_name\",\n      action=~\"$action\",\n      executor=~\"$executor\"\n    }[$__rate_interval])\n  )\n)",
+          "legendFormat": "{{test_name}} - {{action}} - p99",
+          "refId": "P99"
+        }
+      ],
+      "title": "Latency Percentiles Over Time",
+      "transformations": [
+        {
+          "id": "filterFieldsByName",
+          "options": {
+            "include": {
+              "pattern": "/(Time|.*${percentile:pipe}.*)/"
+            }
+          }
+        }
+      ],
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "stepAfter",
+            "lineWidth": 2,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "always",
+            "showValues": false,
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "yellow",
+                "value": 1
+              },
+              {
+                "color": "red",
+                "value": 5
+              }
+            ]
+          },
+          "unit": "s"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 16,
+        "w": 12,
+        "x": 12,
+        "y": 60
+      },
+      "id": 11,
+      "options": {
+        "legend": {
+          "calcs": [
+            "last",
+            "min",
+            "max"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true,
+          "sortBy": "Name",
+          "sortDesc": false
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "pluginVersion": "12.3.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus"
+          },
+          "editorMode": "code",
+          "expr": "avg by (test_name, executor, action) (synth_last_duration_seconds{\n  environment_name=\"$environment_name\",\n  test_name=~\"$test_name\",\n  action=~\"$action\",\n  executor=~\"$executor\"\n})",
+          "legendFormat": "{{test_name}} - {{action}} - {{executor}}",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Live Response Times",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 50,
+            "gradientMode": "opacity",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "smooth",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "showValues": false,
+            "spanNulls": true,
+            "stacking": {
+              "group": "A",
+              "mode": "normal"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              }
+            ]
+          },
+          "unit": "ops"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 68
+      },
+      "id": 9,
+      "options": {
+        "legend": {
+          "calcs": [
+            "last",
+            "mean"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "pluginVersion": "12.3.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus"
+          },
+          "expr": "sum by (action) (\n  rate(synth_operation_count_total{\n    environment_name=\"$environment_name\",\n    test_name=~\"$test_name\",\n    action=~\"$action\",\n    executor=~\"$executor\"\n  }[$__rate_interval])\n)",
+          "legendFormat": "{{action}}",
+          "refId": "A"
+        }
+      ],
+      "title": "Operation Volume by Action",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 20,
+            "gradientMode": "scheme",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "showValues": false,
+            "spanNulls": true,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "area"
+            }
+          },
+          "mappings": [],
+          "max": 100,
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": 0
+              },
+              {
+                "color": "yellow",
+                "value": 95
+              },
+              {
+                "color": "green",
+                "value": 99
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 24,
+        "x": 0,
+        "y": 76
+      },
+      "id": 10,
+      "options": {
+        "legend": {
+          "calcs": [
+            "last",
+            "min"
+          ],
+          "displayMode": "table",
+          "placement": "right",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "pluginVersion": "12.3.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus"
+          },
+          "expr": "sum by (test_name, action, executor) (\n  rate(synth_operation_success_total{\n    environment_name=\"$environment_name\",\n    test_name=~\"$test_name\",\n    action=~\"$action\",\n    executor=~\"$executor\",\n    status=\"success\"\n  }[$__rate_interval])\n) / sum by (test_name, action, executor) (\n  rate(synth_operation_success_total{\n    environment_name=\"$environment_name\",\n    test_name=~\"$test_name\",\n    action=~\"$action\",\n    executor=~\"$executor\"\n  }[$__rate_interval])\n) * 100",
+          "legendFormat": "{{test_name}} - {{action}} - {{executor}}",
+          "refId": "A"
+        }
+      ],
+      "title": "Success Rate Over Time",
+      "type": "timeseries"
+    }
+  ],
+  "preload": false,
+  "refresh": "1m",
+  "schemaVersion": 42,
+  "tags": [
+    "synthetics",
+    "storj",
+    "performance"
+  ],
+  "templating": {
+    "list": [
+      {
+        "current": {
+          "text": "storj-prod-satellite-us1",
+          "value": "storj-prod-satellite-us1"
+        },
+        "datasource": {
+          "type": "prometheus"
+        },
+        "definition": "label_values(synthetics_test_runs_total, environment_name)",
+        "includeAll": false,
+        "label": "Environment",
+        "name": "environment_name",
+        "options": [],
+        "query": {
+          "query": "label_values(synthetics_test_runs_total, environment_name)",
+          "refId": "PrometheusVariableQueryEditor-VariableQuery"
+        },
+        "refresh": 1,
+        "sort": 1,
+        "type": "query"
+      },
+      {
+        "allValue": ".*",
+        "current": {
+          "text": "All",
+          "value": "$__all"
+        },
+        "datasource": {
+          "type": "prometheus"
+        },
+        "definition": "query_result(count_over_time(synthetics_test_runs_total[$__range]))",
+        "includeAll": true,
+        "label": "Test Name",
+        "multi": true,
+        "name": "test_name",
+        "options": [],
+        "query": {
+          "query": "query_result(count_over_time(synthetics_test_runs_total[$__range]))",
+          "refId": "PrometheusVariableQueryEditor-VariableQuery"
+        },
+        "refresh": 1,
+        "regex": "/.*test_name=\"([^\"]+)\".*/",
+        "sort": 1,
+        "type": "query"
+      },
+      {
+        "allValue": ".*",
+        "current": {
+          "text": [
+            "s3",
+            "uplink"
+          ],
+          "value": [
+            "s3",
+            "uplink"
+          ]
+        },
+        "datasource": {
+          "type": "prometheus"
+        },
+        "definition": "query_result(count_over_time(synthetics_test_runs_total[$__range]))",
+        "includeAll": true,
+        "label": "Executor",
+        "multi": true,
+        "name": "executor",
+        "options": [],
+        "query": {
+          "query": "query_result(count_over_time(synthetics_test_runs_total[$__range]))",
+          "refId": "PrometheusVariableQueryEditor-VariableQuery"
+        },
+        "refresh": 1,
+        "regex": "/.*executor=\"([^\"]+)\".*/",
+        "sort": 1,
+        "type": "query"
+      },
+      {
+        "allValue": ".*",
+        "current": {
+          "text": [
+            "download",
+            "upload"
+          ],
+          "value": [
+            "download",
+            "upload"
+          ]
+        },
+        "includeAll": true,
+        "label": "Action",
+        "multi": true,
+        "name": "action",
+        "options": [
+          {
+            "selected": true,
+            "text": "upload",
+            "value": "upload"
+          },
+          {
+            "selected": true,
+            "text": "download",
+            "value": "download"
+          },
+          {
+            "selected": false,
+            "text": "delete",
+            "value": "delete"
+          },
+          {
+            "selected": false,
+            "text": "list",
+            "value": "list"
+          }
+        ],
+        "query": "upload,download,delete,list",
+        "type": "custom"
+      },
+      {
+        "current": {
+          "text": [
+            "p50"
+          ],
+          "value": [
+            "p50"
+          ]
+        },
+        "includeAll": true,
+        "label": "Percentile",
+        "multi": true,
+        "name": "percentile",
+        "options": [
+          {
+            "selected": true,
+            "text": "p50",
+            "value": "p50"
+          },
+          {
+            "selected": false,
+            "text": "p95",
+            "value": "p95"
+          },
+          {
+            "selected": false,
+            "text": "p99",
+            "value": "p99"
+          }
+        ],
+        "query": "p50,p95,p99",
+        "type": "custom"
+      },
+      {
+        "allValue": ".*",
+        "current": {
+          "text": "All",
+          "value": [
+            "$__all"
+          ]
+        },
+        "datasource": {
+          "type": "prometheus"
+        },
+        "definition": "query_result(count_over_time(synth_duration_seconds_count[$__range]))",
+        "includeAll": true,
+        "label": "File Size",
+        "multi": true,
+        "name": "file_size",
+        "options": [],
+        "query": {
+          "query": "query_result(count_over_time(synth_duration_seconds_count[$__range]))",
+          "refId": "PrometheusVariableQueryEditor-VariableQuery"
+        },
+        "refresh": 1,
+        "regex": "/.*file_size=\"([^\"]+)\".*/",
+        "sort": 1,
+        "type": "query"
+      }
+    ]
+  },
+  "time": {
+    "from": "now-1h",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "UTC",
+  "title": "Storj Synthetics - Performance Monitoring",
+  "uid": "storj-synthetics",
+  "version": 72
+}
