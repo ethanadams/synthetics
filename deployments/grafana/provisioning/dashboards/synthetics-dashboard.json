@@ -125,7 +125,7 @@
           "datasource": {
             "type": "prometheus"
           },
-          "expr": "label_join(\n  histogram_quantile(0.5,\n    sum by (test_name, action, executor, le) (\n      rate(synth_duration_seconds_bucket{\n        environment_name=\"$environment_name\",\n        test_name=~\"$test_name\",\n        action=~\"$action\",\n        executor=~\"$executor\"\n      }[5m])\n    )\n  ),\n  \"label\", \" | \", \"test_name\", \"action\", \"executor\"\n)",
+          "expr": "label_join(\n  histogram_quantile(0.5,\n    sum by (test_name, action, executor, le) (\n      rate(synth_duration_seconds_bucket{\n        environment_name=\"$environment_name\",\n        test_name=~\"$test_name\",\n        action=~\"$action\",\n        executor=~\"$executor\"\n      }[$comparison_window])\n    )\n  ),\n  \"label\", \" | \", \"test_name\", \"action\", \"executor\"\n)",
           "format": "table",
           "instant": true,
           "legendFormat": "Current",
@@ -135,7 +135,7 @@
           "datasource": {
             "type": "prometheus"
           },
-          "expr": "label_join(\n  (\n    histogram_quantile(0.5,\n      sum by (test_name, action, executor, le) (\n        rate(synth_duration_seconds_bucket{\n          environment_name=\"$environment_name\",\n          test_name=~\"$test_name\",\n          action=~\"$action\",\n          executor=~\"$executor\"\n        }[5m])\n      )\n    )\n    /\n    histogram_quantile(0.5,\n      sum by (test_name, action, executor, le) (\n        rate(synth_duration_seconds_bucket{\n          environment_name=\"$environment_name\",\n          test_name=~\"$test_name\",\n          action=~\"$action\",\n          executor=~\"$executor\"\n        }[5m] offset 1h)\n      )\n    )\n    - 1\n  ) * 100,\n  \"label\", \" | \", \"test_name\", \"action\", \"executor\"\n)",
+          "expr": "label_join(\n  (\n    histogram_quantile(0.5,\n      sum by (test_name, action, executor, le) (\n        rate(synth_duration_seconds_bucket{\n          environment_name=\"$environment_name\",\n          test_name=~\"$test_name\",\n          action=~\"$action\",\n          executor=~\"$executor\"\n        }[$comparison_window])\n      )\n    )\n    /\n    histogram_quantile(0.5,\n      sum by (test_name, action, executor, le) (\n        rate(synth_duration_seconds_bucket{\n          environment_name=\"$environment_name\",\n          test_name=~\"$test_name\",\n          action=~\"$action\",\n          executor=~\"$executor\"\n        }[$comparison_window] offset 1h)\n      )\n    )\n    - 1\n  ) * 100,\n  \"label\", \" | \", \"test_name\", \"action\", \"executor\"\n)",
           "format": "table",
           "instant": true,
           "legendFormat": "1h ago",
@@ -145,7 +145,7 @@
           "datasource": {
             "type": "prometheus"
           },
-          "expr": "label_join(\n  (\n    histogram_quantile(0.5,\n      sum by (test_name, action, executor, le) (\n        rate(synth_duration_seconds_bucket{\n          environment_name=\"$environment_name\",\n          test_name=~\"$test_name\",\n          action=~\"$action\",\n          executor=~\"$executor\"\n        }[5m])\n      )\n    )\n    /\n    histogram_quantile(0.5,\n      sum by (test_name, action, executor, le) (\n        rate(synth_duration_seconds_bucket{\n          environment_name=\"$environment_name\",\n          test_name=~\"$test_name\",\n          action=~\"$action\",\n          executor=~\"$executor\"\n        }[5m] offset 6h)\n      )\n    )\n    - 1\n  ) * 100,\n  \"label\", \" | \", \"test_name\", \"action\", \"executor\"\n)",
+          "expr": "label_join(\n  (\n    histogram_quantile(0.5,\n      sum by (test_name, action, executor, le) (\n        rate(synth_duration_seconds_bucket{\n          environment_name=\"$environment_name\",\n          test_name=~\"$test_name\",\n          action=~\"$action\",\n          executor=~\"$executor\"\n        }[$comparison_window])\n      )\n    )\n    /\n    histogram_quantile(0.5,\n      sum by (test_name, action, executor, le) (\n        rate(synth_duration_seconds_bucket{\n          environment_name=\"$environment_name\",\n          test_name=~\"$test_name\",\n          action=~\"$action\",\n          executor=~\"$executor\"\n        }[$comparison_window] offset 6h)\n      )\n    )\n    - 1\n  ) * 100,\n  \"label\", \" | \", \"test_name\", \"action\", \"executor\"\n)",
           "format": "table",
           "instant": true,
           "legendFormat": "6h ago",
@@ -155,7 +155,7 @@
           "datasource": {
             "type": "prometheus"
           },
-          "expr": "label_join(\n  (\n    histogram_quantile(0.5,\n      sum by (test_name, action, executor, le) (\n        rate(synth_duration_seconds_bucket{\n          environment_name=\"$environment_name\",\n          test_name=~\"$test_name\",\n          action=~\"$action\",\n          executor=~\"$executor\"\n        }[5m])\n      )\n    )\n    /\n    histogram_quantile(0.5,\n      sum by (test_name, action, executor, le) (\n        rate(synth_duration_seconds_bucket{\n          environment_name=\"$environment_name\",\n          test_name=~\"$test_name\",\n          action=~\"$action\",\n          executor=~\"$executor\"\n        }[5m] offset 12h)\n      )\n    )\n    - 1\n  ) * 100,\n  \"label\", \" | \", \"test_name\", \"action\", \"executor\"\n)",
+          "expr": "label_join(\n  (\n    histogram_quantile(0.5,\n      sum by (test_name, action, executor, le) (\n        rate(synth_duration_seconds_bucket{\n          environment_name=\"$environment_name\",\n          test_name=~\"$test_name\",\n          action=~\"$action\",\n          executor=~\"$executor\"\n        }[$comparison_window])\n      )\n    )\n    /\n    histogram_quantile(0.5,\n      sum by (test_name, action, executor, le) (\n        rate(synth_duration_seconds_bucket{\n          environment_name=\"$environment_name\",\n          test_name=~\"$test_name\",\n          action=~\"$action\",\n          executor=~\"$executor\"\n        }[$comparison_window] offset 12h)\n      )\n    )\n    - 1\n  ) * 100,\n  \"label\", \" | \", \"test_name\", \"action\", \"executor\"\n)",
           "format": "table",
           "instant": true,
           "legendFormat": "12h ago",
@@ -165,7 +165,7 @@
           "datasource": {
             "type": "prometheus"
           },
-          "expr": "label_join(\n  (\n    histogram_quantile(0.5,\n      sum by (test_name, action, executor, le) (\n        rate(synth_duration_seconds_bucket{\n          environment_name=\"$environment_name\",\n          test_name=~\"$test_name\",\n          action=~\"$action\",\n          executor=~\"$executor\"\n        }[5m])\n      )\n    )\n    /\n    histogram_quantile(0.5,\n      sum by (test_name, action, executor, le) (\n        rate(synth_duration_seconds_bucket{\n          environment_name=\"$environment_name\",\n          test_name=~\"$test_name\",\n          action=~\"$action\",\n          executor=~\"$executor\"\n        }[5m] offset 24h)\n      )\n    )\n    - 1\n  ) * 100,\n  \"label\", \" | \", \"test_name\", \"action\", \"executor\"\n)",
+          "expr": "label_join(\n  (\n    histogram_quantile(0.5,\n      sum by (test_name, action, executor, le) (\n        rate(synth_duration_seconds_bucket{\n          environment_name=\"$environment_name\",\n          test_name=~\"$test_name\",\n          action=~\"$action\",\n          executor=~\"$executor\"\n        }[$comparison_window])\n      )\n    )\n    /\n    histogram_quantile(0.5,\n      sum by (test_name, action, executor, le) (\n        rate(synth_duration_seconds_bucket{\n          environment_name=\"$environment_name\",\n          test_name=~\"$test_name\",\n          action=~\"$action\",\n          executor=~\"$executor\"\n        }[$comparison_window] offset 24h)\n      )\n    )\n    - 1\n  ) * 100,\n  \"label\", \" | \", \"test_name\", \"action\", \"executor\"\n)",
           "format": "table",
           "instant": true,
           "legendFormat": "24h ago",
@@ -175,13 +175,14 @@
           "datasource": {
             "type": "prometheus"
           },
-          "expr": "label_join(\n  (\n    histogram_quantile(0.5,\n      sum by (test_name, action, executor, le) (\n        rate(synth_duration_seconds_bucket{\n          environment_name=\"$environment_name\",\n          test_name=~\"$test_name\",\n          action=~\"$action\",\n          executor=~\"$executor\"\n        }[5m])\n      )\n    )\n    /\n    histogram_quantile(0.5,\n      sum by (test_name, action, executor, le) (\n        rate(synth_duration_seconds_bucket{\n          environment_name=\"$environment_name\",\n          test_name=~\"$test_name\",\n          action=~\"$action\",\n          executor=~\"$executor\"\n        }[5m] offset 48h)\n      )\n    )\n    - 1\n  ) * 100,\n  \"label\", \" | \", \"test_name\", \"action\", \"executor\"\n)",
+          "expr": "label_join(\n  (\n    histogram_quantile(0.5,\n      sum by (test_name, action, executor, le) (\n        rate(synth_duration_seconds_bucket{\n          environment_name=\"$environment_name\",\n          test_name=~\"$test_name\",\n          action=~\"$action\",\n          executor=~\"$executor\"\n        }[$comparison_window])\n      )\n    )\n    /\n    histogram_quantile(0.5,\n      sum by (test_name, action, executor, le) (\n        rate(synth_duration_seconds_bucket{\n          environment_name=\"$environment_name\",\n          test_name=~\"$test_name\",\n          action=~\"$action\",\n          executor=~\"$executor\"\n        }[$comparison_window] offset 48h)\n      )\n    )\n    - 1\n  ) * 100,\n  \"label\", \" | \", \"test_name\", \"action\", \"executor\"\n)",
           "format": "table",
           "instant": true,
           "legendFormat": "48h ago",
           "refId": "vs48h"
         }
       ],
+      "timeFrom": "$comparison_window",
       "title": "P50 Performance Degradation",
       "transformations": [
         {
@@ -311,7 +312,7 @@
           "datasource": {
             "type": "prometheus"
           },
-          "expr": "label_join(\n  histogram_quantile(0.9,\n    sum by (test_name, action, executor, le) (\n      rate(synth_duration_seconds_bucket{\n        environment_name=\"$environment_name\",\n        test_name=~\"$test_name\",\n        action=~\"$action\",\n        executor=~\"$executor\"\n      }[5m])\n    )\n  ),\n  \"label\", \" | \", \"test_name\", \"action\", \"executor\"\n)",
+          "expr": "label_join(\n  histogram_quantile(0.9,\n    sum by (test_name, action, executor, le) (\n      rate(synth_duration_seconds_bucket{\n        environment_name=\"$environment_name\",\n        test_name=~\"$test_name\",\n        action=~\"$action\",\n        executor=~\"$executor\"\n      }[$comparison_window])\n    )\n  ),\n  \"label\", \" | \", \"test_name\", \"action\", \"executor\"\n)",
           "format": "table",
           "instant": true,
           "legendFormat": "Current",
@@ -321,7 +322,7 @@
           "datasource": {
             "type": "prometheus"
           },
-          "expr": "label_join(\n  (\n    histogram_quantile(0.9,\n      sum by (test_name, action, executor, le) (\n        rate(synth_duration_seconds_bucket{\n          environment_name=\"$environment_name\",\n          test_name=~\"$test_name\",\n          action=~\"$action\",\n          executor=~\"$executor\"\n        }[5m])\n      )\n    )\n    /\n    histogram_quantile(0.9,\n      sum by (test_name, action, executor, le) (\n        rate(synth_duration_seconds_bucket{\n          environment_name=\"$environment_name\",\n          test_name=~\"$test_name\",\n          action=~\"$action\",\n          executor=~\"$executor\"\n        }[5m] offset 1h)\n      )\n    )\n    - 1\n  ) * 100,\n  \"label\", \" | \", \"test_name\", \"action\", \"executor\"\n)",
+          "expr": "label_join(\n  (\n    histogram_quantile(0.9,\n      sum by (test_name, action, executor, le) (\n        rate(synth_duration_seconds_bucket{\n          environment_name=\"$environment_name\",\n          test_name=~\"$test_name\",\n          action=~\"$action\",\n          executor=~\"$executor\"\n        }[$comparison_window])\n      )\n    )\n    /\n    histogram_quantile(0.9,\n      sum by (test_name, action, executor, le) (\n        rate(synth_duration_seconds_bucket{\n          environment_name=\"$environment_name\",\n          test_name=~\"$test_name\",\n          action=~\"$action\",\n          executor=~\"$executor\"\n        }[$comparison_window] offset 1h)\n      )\n    )\n    - 1\n  ) * 100,\n  \"label\", \" | \", \"test_name\", \"action\", \"executor\"\n)",
           "format": "table",
           "instant": true,
           "legendFormat": "1h ago",
@@ -331,7 +332,7 @@
           "datasource": {
             "type": "prometheus"
           },
-          "expr": "label_join(\n  (\n    histogram_quantile(0.9,\n      sum by (test_name, action, executor, le) (\n        rate(synth_duration_seconds_bucket{\n          environment_name=\"$environment_name\",\n          test_name=~\"$test_name\",\n          action=~\"$action\",\n          executor=~\"$executor\"\n        }[5m])\n      )\n    )\n    /\n    histogram_quantile(0.9,\n      sum by (test_name, action, executor, le) (\n        rate(synth_duration_seconds_bucket{\n          environment_name=\"$environment_name\",\n          test_name=~\"$test_name\",\n          action=~\"$action\",\n          executor=~\"$executor\"\n        }[5m] offset 6h)\n      )\n    )\n    - 1\n  ) * 100,\n  \"label\", \" | \", \"test_name\", \"action\", \"executor\"\n)",
+          "expr": "label_join(\n  (\n    histogram_quantile(0.9,\n      sum by (test_name, action, executor, le) (\n        rate(synth_duration_seconds_bucket{\n          environment_name=\"$environment_name\",\n          test_name=~\"$test_name\",\n          action=~\"$action\",\n          executor=~\"$executor\"\n        }[$comparison_window])\n      )\n    )\n    /\n    histogram_quantile(0.9,\n      sum by (test_name, action, executor, le) (\n        rate(synth_duration_seconds_bucket{\n          environment_name=\"$environment_name\",\n          test_name=~\"$test_name\",\n          action=~\"$action\",\n          executor=~\"$executor\"\n        }[$comparison_window] offset 6h)\n      )\n    )\n    - 1\n  ) * 100,\n  \"label\", \" | \", \"test_name\", \"action\", \"executor\"\n)",
           "format": "table",
           "instant": true,
           "legendFormat": "6h ago",
@@ -341,7 +342,7 @@
           "datasource": {
             "type": "prometheus"
           },
-          "expr": "label_join(\n  (\n    histogram_quantile(0.9,\n      sum by (test_name, action, executor, le) (\n        rate(synth_duration_seconds_bucket{\n          environment_name=\"$environment_name\",\n          test_name=~\"$test_name\",\n          action=~\"$action\",\n          executor=~\"$executor\"\n        }[5m])\n      )\n    )\n    /\n    histogram_quantile(0.9,\n      sum by (test_name, action, executor, le) (\n        rate(synth_duration_seconds_bucket{\n          environment_name=\"$environment_name\",\n          test_name=~\"$test_name\",\n          action=~\"$action\",\n          executor=~\"$executor\"\n        }[5m] offset 12h)\n      )\n    )\n    - 1\n  ) * 100,\n  \"label\", \" | \", \"test_name\", \"action\", \"executor\"\n)",
+          "expr": "label_join(\n  (\n    histogram_quantile(0.9,\n      sum by (test_name, action, executor, le) (\n        rate(synth_duration_seconds_bucket{\n          environment_name=\"$environment_name\",\n          test_name=~\"$test_name\",\n          action=~\"$action\",\n          executor=~\"$executor\"\n        }[$comparison_window])\n      )\n    )\n    /\n    histogram_quantile(0.9,\n      sum by (test_name, action, executor, le) (\n        rate(synth_duration_seconds_bucket{\n          environment_name=\"$environment_name\",\n          test_name=~\"$test_name\",\n          action=~\"$action\",\n          executor=~\"$executor\"\n        }[$comparison_window] offset 12h)\n      )\n    )\n    - 1\n  ) * 100,\n  \"label\", \" | \", \"test_name\", \"action\", \"executor\"\n)",
           "format": "table",
           "instant": true,
           "legendFormat": "12h ago",
@@ -351,7 +352,7 @@
           "datasource": {
             "type": "prometheus"
           },
-          "expr": "label_join(\n  (\n    histogram_quantile(0.9,\n      sum by (test_name, action, executor, le) (\n        rate(synth_duration_seconds_bucket{\n          environment_name=\"$environment_name\",\n          test_name=~\"$test_name\",\n          action=~\"$action\",\n          executor=~\"$executor\"\n        }[5m])\n      )\n    )\n    /\n    histogram_quantile(0.9,\n      sum by (test_name, action, executor, le) (\n        rate(synth_duration_seconds_bucket{\n          environment_name=\"$environment_name\",\n          test_name=~\"$test_name\",\n          action=~\"$action\",\n          executor=~\"$executor\"\n        }[5m] offset 24h)\n      )\n    )\n    - 1\n  ) * 100,\n  \"label\", \" | \", \"test_name\", \"action\", \"executor\"\n)",
+          "expr": "label_join(\n  (\n    histogram_quantile(0.9,\n      sum by (test_name, action, executor, le) (\n        rate(synth_duration_seconds_bucket{\n          environment_name=\"$environment_name\",\n          test_name=~\"$test_name\",\n          action=~\"$action\",\n          executor=~\"$executor\"\n        }[$comparison_window])\n      )\n    )\n    /\n    histogram_quantile(0.9,\n      sum by (test_name, action, executor, le) (\n        rate(synth_duration_seconds_bucket{\n          environment_name=\"$environment_name\",\n          test_name=~\"$test_name\",\n          action=~\"$action\",\n          executor=~\"$executor\"\n        }[$comparison_window] offset 24h)\n      )\n    )\n    - 1\n  ) * 100,\n  \"label\", \" | \", \"test_name\", \"action\", \"executor\"\n)",
           "format": "table",
           "instant": true,
           "legendFormat": "24h ago",
@@ -361,13 +362,14 @@
           "datasource": {
             "type": "prometheus"
           },
-          "expr": "label_join(\n  (\n    histogram_quantile(0.9,\n      sum by (test_name, action, executor, le) (\n        rate(synth_duration_seconds_bucket{\n          environment_name=\"$environment_name\",\n          test_name=~\"$test_name\",\n          action=~\"$action\",\n          executor=~\"$executor\"\n        }[5m])\n      )\n    )\n    /\n    histogram_quantile(0.9,\n      sum by (test_name, action, executor, le) (\n        rate(synth_duration_seconds_bucket{\n          environment_name=\"$environment_name\",\n          test_name=~\"$test_name\",\n          action=~\"$action\",\n          executor=~\"$executor\"\n        }[5m] offset 48h)\n      )\n    )\n    - 1\n  ) * 100,\n  \"label\", \" | \", \"test_name\", \"action\", \"executor\"\n)",
+          "expr": "label_join(\n  (\n    histogram_quantile(0.9,\n      sum by (test_name, action, executor, le) (\n        rate(synth_duration_seconds_bucket{\n          environment_name=\"$environment_name\",\n          test_name=~\"$test_name\",\n          action=~\"$action\",\n          executor=~\"$executor\"\n        }[$comparison_window])\n      )\n    )\n    /\n    histogram_quantile(0.9,\n      sum by (test_name, action, executor, le) (\n        rate(synth_duration_seconds_bucket{\n          environment_name=\"$environment_name\",\n          test_name=~\"$test_name\",\n          action=~\"$action\",\n          executor=~\"$executor\"\n        }[$comparison_window] offset 48h)\n      )\n    )\n    - 1\n  ) * 100,\n  \"label\", \" | \", \"test_name\", \"action\", \"executor\"\n)",
           "format": "table",
           "instant": true,
           "legendFormat": "48h ago",
           "refId": "vs48h"
         }
       ],
+      "timeFrom": "$comparison_window",
       "title": "P90 Performance Degradation",
       "transformations": [
         {
@@ -497,7 +499,7 @@
           "datasource": {
             "type": "prometheus"
           },
-          "expr": "label_join(\n  histogram_quantile(0.95,\n    sum by (test_name, action, executor, le) (\n      rate(synth_duration_seconds_bucket{\n        environment_name=\"$environment_name\",\n        test_name=~\"$test_name\",\n        action=~\"$action\",\n        executor=~\"$executor\"\n      }[5m])\n    )\n  ),\n  \"label\", \" | \", \"test_name\", \"action\", \"executor\"\n)",
+          "expr": "label_join(\n  histogram_quantile(0.95,\n    sum by (test_name, action, executor, le) (\n      rate(synth_duration_seconds_bucket{\n        environment_name=\"$environment_name\",\n        test_name=~\"$test_name\",\n        action=~\"$action\",\n        executor=~\"$executor\"\n      }[$comparison_window])\n    )\n  ),\n  \"label\", \" | \", \"test_name\", \"action\", \"executor\"\n)",
           "format": "table",
           "instant": true,
           "legendFormat": "Current",
@@ -507,7 +509,7 @@
           "datasource": {
             "type": "prometheus"
           },
-          "expr": "label_join(\n  (\n    histogram_quantile(0.95,\n      sum by (test_name, action, executor, le) (\n        rate(synth_duration_seconds_bucket{\n          environment_name=\"$environment_name\",\n          test_name=~\"$test_name\",\n          action=~\"$action\",\n          executor=~\"$executor\"\n        }[5m])\n      )\n    )\n    /\n    histogram_quantile(0.95,\n      sum by (test_name, action, executor, le) (\n        rate(synth_duration_seconds_bucket{\n          environment_name=\"$environment_name\",\n          test_name=~\"$test_name\",\n          action=~\"$action\",\n          executor=~\"$executor\"\n        }[5m] offset 1h)\n      )\n    )\n    - 1\n  ) * 100,\n  \"label\", \" | \", \"test_name\", \"action\", \"executor\"\n)",
+          "expr": "label_join(\n  (\n    histogram_quantile(0.95,\n      sum by (test_name, action, executor, le) (\n        rate(synth_duration_seconds_bucket{\n          environment_name=\"$environment_name\",\n          test_name=~\"$test_name\",\n          action=~\"$action\",\n          executor=~\"$executor\"\n        }[$comparison_window])\n      )\n    )\n    /\n    histogram_quantile(0.95,\n      sum by (test_name, action, executor, le) (\n        rate(synth_duration_seconds_bucket{\n          environment_name=\"$environment_name\",\n          test_name=~\"$test_name\",\n          action=~\"$action\",\n          executor=~\"$executor\"\n        }[$comparison_window] offset 1h)\n      )\n    )\n    - 1\n  ) * 100,\n  \"label\", \" | \", \"test_name\", \"action\", \"executor\"\n)",
           "format": "table",
           "instant": true,
           "legendFormat": "1h ago",
@@ -517,7 +519,7 @@
           "datasource": {
             "type": "prometheus"
           },
-          "expr": "label_join(\n  (\n    histogram_quantile(0.95,\n      sum by (test_name, action, executor, le) (\n        rate(synth_duration_seconds_bucket{\n          environment_name=\"$environment_name\",\n          test_name=~\"$test_name\",\n          action=~\"$action\",\n          executor=~\"$executor\"\n        }[5m])\n      )\n    )\n    /\n    histogram_quantile(0.95,\n      sum by (test_name, action, executor, le) (\n        rate(synth_duration_seconds_bucket{\n          environment_name=\"$environment_name\",\n          test_name=~\"$test_name\",\n          action=~\"$action\",\n          executor=~\"$executor\"\n        }[5m] offset 6h)\n      )\n    )\n    - 1\n  ) * 100,\n  \"label\", \" | \", \"test_name\", \"action\", \"executor\"\n)",
+          "expr": "label_join(\n  (\n    histogram_quantile(0.95,\n      sum by (test_name, action, executor, le) (\n        rate(synth_duration_seconds_bucket{\n          environment_name=\"$environment_name\",\n          test_name=~\"$test_name\",\n          action=~\"$action\",\n          executor=~\"$executor\"\n        }[$comparison_window])\n      )\n    )\n    /\n    histogram_quantile(0.95,\n      sum by (test_name, action, executor, le) (\n        rate(synth_duration_seconds_bucket{\n          environment_name=\"$environment_name\",\n          test_name=~\"$test_name\",\n          action=~\"$action\",\n          executor=~\"$executor\"\n        }[$comparison_window] offset 6h)\n      )\n    )\n    - 1\n  ) * 100,\n  \"label\", \" | \", \"test_name\", \"action\", \"executor\"\n)",
           "format": "table",
           "instant": true,
           "legendFormat": "6h ago",
@@ -527,7 +529,7 @@
           "datasource": {
             "type": "prometheus"
           },
-          "expr": "label_join(\n  (\n    histogram_quantile(0.95,\n      sum by (test_name, action, executor, le) (\n        rate(synth_duration_seconds_bucket{\n          environment_name=\"$environment_name\",\n          test_name=~\"$test_name\",\n          action=~\"$action\",\n          executor=~\"$executor\"\n        }[5m])\n      )\n    )\n    /\n    histogram_quantile(0.95,\n      sum by (test_name, action, executor, le) (\n        rate(synth_duration_seconds_bucket{\n          environment_name=\"$environment_name\",\n          test_name=~\"$test_name\",\n          action=~\"$action\",\n          executor=~\"$executor\"\n        }[5m] offset 12h)\n      )\n    )\n    - 1\n  ) * 100,\n  \"label\", \" | \", \"test_name\", \"action\", \"executor\"\n)",
+          "expr": "label_join(\n  (\n    histogram_quantile(0.95,\n      sum by (test_name, action, executor, le) (\n        rate(synth_duration_seconds_bucket{\n          environment_name=\"$environment_name\",\n          test_name=~\"$test_name\",\n          action=~\"$action\",\n          executor=~\"$executor\"\n        }[$comparison_window])\n      )\n    )\n    /\n    histogram_quantile(0.95,\n      sum by (test_name, action, executor, le) (\n        rate(synth_duration_seconds_bucket{\n          environment_name=\"$environment_name\",\n          test_name=~\"$test_name\",\n          action=~\"$action\",\n          executor=~\"$executor\"\n        }[$comparison_window] offset 12h)\n      )\n    )\n    - 1\n  ) * 100,\n  \"label\", \" | \", \"test_name\", \"action\", \"executor\"\n)",
           "format": "table",
           "instant": true,
           "legendFormat": "12h ago",
@@ -537,7 +539,7 @@
           "datasource": {
             "type": "prometheus"
           },
-          "expr": "label_join(\n  (\n    histogram_quantile(0.95,\n      sum by (test_name, action, executor, le) (\n        rate(synth_duration_seconds_bucket{\n          environment_name=\"$environment_name\",\n          test_name=~\"$test_name\",\n          action=~\"$action\",\n          executor=~\"$executor\"\n        }[5m])\n      )\n    )\n    /\n    histogram_quantile(0.95,\n      sum by (test_name, action, executor, le) (\n        rate(synth_duration_seconds_bucket{\n          environment_name=\"$environment_name\",\n          test_name=~\"$test_name\",\n          action=~\"$action\",\n          executor=~\"$executor\"\n        }[5m] offset 24h)\n      )\n    )\n    - 1\n  ) * 100,\n  \"label\", \" | \", \"test_name\", \"action\", \"executor\"\n)",
+          "expr": "label_join(\n  (\n    histogram_quantile(0.95,\n      sum by (test_name, action, executor, le) (\n        rate(synth_duration_seconds_bucket{\n          environment_name=\"$environment_name\",\n          test_name=~\"$test_name\",\n          action=~\"$action\",\n          executor=~\"$executor\"\n        }[$comparison_window])\n      )\n    )\n    /\n    histogram_quantile(0.95,\n      sum by (test_name, action, executor, le) (\n        rate(synth_duration_seconds_bucket{\n          environment_name=\"$environment_name\",\n          test_name=~\"$test_name\",\n          action=~\"$action\",\n          executor=~\"$executor\"\n        }[$comparison_window] offset 24h)\n      )\n    )\n    - 1\n  ) * 100,\n  \"label\", \" | \", \"test_name\", \"action\", \"executor\"\n)",
           "format": "table",
           "instant": true,
           "legendFormat": "24h ago",
@@ -547,13 +549,14 @@
           "datasource": {
             "type": "prometheus"
           },
-          "expr": "label_join(\n  (\n    histogram_quantile(0.95,\n      sum by (test_name, action, executor, le) (\n        rate(synth_duration_seconds_bucket{\n          environment_name=\"$environment_name\",\n          test_name=~\"$test_name\",\n          action=~\"$action\",\n          executor=~\"$executor\"\n        }[5m])\n      )\n    )\n    /\n    histogram_quantile(0.95,\n      sum by (test_name, action, executor, le) (\n        rate(synth_duration_seconds_bucket{\n          environment_name=\"$environment_name\",\n          test_name=~\"$test_name\",\n          action=~\"$action\",\n          executor=~\"$executor\"\n        }[5m] offset 48h)\n      )\n    )\n    - 1\n  ) * 100,\n  \"label\", \" | \", \"test_name\", \"action\", \"executor\"\n)",
+          "expr": "label_join(\n  (\n    histogram_quantile(0.95,\n      sum by (test_name, action, executor, le) (\n        rate(synth_duration_seconds_bucket{\n          environment_name=\"$environment_name\",\n          test_name=~\"$test_name\",\n          action=~\"$action\",\n          executor=~\"$executor\"\n        }[$comparison_window])\n      )\n    )\n    /\n    histogram_quantile(0.95,\n      sum by (test_name, action, executor, le) (\n        rate(synth_duration_seconds_bucket{\n          environment_name=\"$environment_name\",\n          test_name=~\"$test_name\",\n          action=~\"$action\",\n          executor=~\"$executor\"\n        }[$comparison_window] offset 48h)\n      )\n    )\n    - 1\n  ) * 100,\n  \"label\", \" | \", \"test_name\", \"action\", \"executor\"\n)",
           "format": "table",
           "instant": true,
           "legendFormat": "48h ago",
           "refId": "vs48h"
         }
       ],
+      "timeFrom": "$comparison_window",
       "title": "P95 Performance Degradation",
       "transformations": [
         {
@@ -804,7 +807,7 @@
           "datasource": {
             "type": "prometheus"
           },
-          "expr": "histogram_quantile(0.50,\n  sum by (test_name, action, executor, le) (\n    rate(synth_duration_seconds_bucket{\n      environment_name=\"$environment_name\",\n      test_name=~\"$test_name\",\n      action=~\"$action\",\n      executor=~\"$executor\"\n    }[5m])\n  )\n)",
+          "expr": "histogram_quantile(0.50,\n  sum by (test_name, action, executor, le) (\n    rate(synth_duration_seconds_bucket{\n      environment_name=\"$environment_name\",\n      test_name=~\"$test_name\",\n      action=~\"$action\",\n      executor=~\"$executor\"\n    }[$comparison_window])\n  )\n)",
           "format": "table",
           "instant": true,
           "refId": "P50"
@@ -813,7 +816,7 @@
           "datasource": {
             "type": "prometheus"
           },
-          "expr": "histogram_quantile(0.95,\n  sum by (test_name, action, executor, le) (\n    rate(synth_duration_seconds_bucket{\n      environment_name=\"$environment_name\",\n      test_name=~\"$test_name\",\n      action=~\"$action\",\n      executor=~\"$executor\"\n    }[5m])\n  )\n)",
+          "expr": "histogram_quantile(0.95,\n  sum by (test_name, action, executor, le) (\n    rate(synth_duration_seconds_bucket{\n      environment_name=\"$environment_name\",\n      test_name=~\"$test_name\",\n      action=~\"$action\",\n      executor=~\"$executor\"\n    }[$comparison_window])\n  )\n)",
           "format": "table",
           "instant": true,
           "refId": "P95"
@@ -822,7 +825,7 @@
           "datasource": {
             "type": "prometheus"
           },
-          "expr": "histogram_quantile(0.99,\n  sum by (test_name, action, executor, le) (\n    rate(synth_duration_seconds_bucket{\n      environment_name=\"$environment_name\",\n      test_name=~\"$test_name\",\n      action=~\"$action\",\n      executor=~\"$executor\"\n    }[5m])\n  )\n)",
+          "expr": "histogram_quantile(0.99,\n  sum by (test_name, action, executor, le) (\n    rate(synth_duration_seconds_bucket{\n      environment_name=\"$environment_name\",\n      test_name=~\"$test_name\",\n      action=~\"$action\",\n      executor=~\"$executor\"\n    }[$comparison_window])\n  )\n)",
           "format": "table",
           "instant": true,
           "refId": "P99"
@@ -831,7 +834,7 @@
           "datasource": {
             "type": "prometheus"
           },
-          "expr": "(\n  histogram_quantile(0.50,\n    sum by (test_name, action, executor, le) (\n      rate(synth_duration_seconds_bucket{\n        environment_name=\"$environment_name\",\n        test_name=~\"$test_name\",\n        action=~\"$action\",\n        executor=~\"$executor\"\n      }[5m])\n    )\n  )\n  /\n  histogram_quantile(0.50,\n    sum by (test_name, action, executor, le) (\n      rate(synth_duration_seconds_bucket{\n        environment_name=\"$environment_name\",\n        test_name=~\"$test_name\",\n        action=~\"$action\",\n        executor=~\"$executor\"\n      }[5m] offset 1h)\n    )\n  )\n  - 1\n) * 100",
+          "expr": "(\n  histogram_quantile(0.50,\n    sum by (test_name, action, executor, le) (\n      rate(synth_duration_seconds_bucket{\n        environment_name=\"$environment_name\",\n        test_name=~\"$test_name\",\n        action=~\"$action\",\n        executor=~\"$executor\"\n      }[$comparison_window])\n    )\n  )\n  /\n  histogram_quantile(0.50,\n    sum by (test_name, action, executor, le) (\n      rate(synth_duration_seconds_bucket{\n        environment_name=\"$environment_name\",\n        test_name=~\"$test_name\",\n        action=~\"$action\",\n        executor=~\"$executor\"\n      }[$comparison_window] offset 1h)\n    )\n  )\n  - 1\n) * 100",
           "format": "table",
           "instant": true,
           "refId": "vs1h"
@@ -840,7 +843,7 @@
           "datasource": {
             "type": "prometheus"
           },
-          "expr": "(\n  histogram_quantile(0.50,\n    sum by (test_name, action, executor, le) (\n      rate(synth_duration_seconds_bucket{\n        environment_name=\"$environment_name\",\n        test_name=~\"$test_name\",\n        action=~\"$action\",\n        executor=~\"$executor\"\n      }[5m])\n    )\n  )\n  /\n  histogram_quantile(0.50,\n    sum by (test_name, action, executor, le) (\n      rate(synth_duration_seconds_bucket{\n        environment_name=\"$environment_name\",\n        test_name=~\"$test_name\",\n        action=~\"$action\",\n        executor=~\"$executor\"\n      }[5m] offset 24h)\n    )\n  )\n  - 1\n) * 100",
+          "expr": "(\n  histogram_quantile(0.50,\n    sum by (test_name, action, executor, le) (\n      rate(synth_duration_seconds_bucket{\n        environment_name=\"$environment_name\",\n        test_name=~\"$test_name\",\n        action=~\"$action\",\n        executor=~\"$executor\"\n      }[$comparison_window])\n    )\n  )\n  /\n  histogram_quantile(0.50,\n    sum by (test_name, action, executor, le) (\n      rate(synth_duration_seconds_bucket{\n        environment_name=\"$environment_name\",\n        test_name=~\"$test_name\",\n        action=~\"$action\",\n        executor=~\"$executor\"\n      }[$comparison_window] offset 24h)\n    )\n  )\n  - 1\n) * 100",
           "format": "table",
           "instant": true,
           "refId": "vs24h"
@@ -849,12 +852,13 @@
           "datasource": {
             "type": "prometheus"
           },
-          "expr": "(\n  histogram_quantile(0.50,\n    sum by (test_name, action, executor, le) (\n      rate(synth_duration_seconds_bucket{\n        environment_name=\"$environment_name\",\n        test_name=~\"$test_name\",\n        action=~\"$action\",\n        executor=~\"$executor\"\n      }[5m])\n    )\n  )\n  /\n  histogram_quantile(0.50,\n    sum by (test_name, action, executor, le) (\n      rate(synth_duration_seconds_bucket{\n        environment_name=\"$environment_name\",\n        test_name=~\"$test_name\",\n        action=~\"$action\",\n        executor=~\"$executor\"\n      }[5m] offset 7d)\n    )\n  )\n  - 1\n) * 100",
+          "expr": "(\n  histogram_quantile(0.50,\n    sum by (test_name, action, executor, le) (\n      rate(synth_duration_seconds_bucket{\n        environment_name=\"$environment_name\",\n        test_name=~\"$test_name\",\n        action=~\"$action\",\n        executor=~\"$executor\"\n      }[$comparison_window])\n    )\n  )\n  /\n  histogram_quantile(0.50,\n    sum by (test_name, action, executor, le) (\n      rate(synth_duration_seconds_bucket{\n        environment_name=\"$environment_name\",\n        test_name=~\"$test_name\",\n        action=~\"$action\",\n        executor=~\"$executor\"\n      }[$comparison_window] offset 7d)\n    )\n  )\n  - 1\n) * 100",
           "format": "table",
           "instant": true,
           "refId": "vs7d"
         }
       ],
+      "timeFrom": "$comparison_window",
       "title": "Degradation Table - Current Values & % Change",
       "transformations": [
         {
@@ -979,11 +983,12 @@
           "datasource": {
             "type": "prometheus"
           },
-          "expr": "avg(\n  (\n    histogram_quantile(0.50,\n      sum by (test_name, action, executor, le) (\n        rate(synth_duration_seconds_bucket{\n          environment_name=\"$environment_name\",\n          test_name=~\"$test_name\",\n          action=~\"$action\",\n          executor=~\"$executor\"\n        }[5m])\n      )\n    )\n    /\n    histogram_quantile(0.50,\n      sum by (test_name, action, executor, le) (\n        rate(synth_duration_seconds_bucket{\n          environment_name=\"$environment_name\",\n          test_name=~\"$test_name\",\n          action=~\"$action\",\n          executor=~\"$executor\"\n        }[5m] offset 1h)\n      )\n    )\n    - 1\n  ) * 100\n)",
+          "expr": "avg(\n  (\n    histogram_quantile($stat_percentile,\n      sum by (test_name, action, executor, le) (\n        rate(synth_duration_seconds_bucket{\n          environment_name=\"$environment_name\",\n          test_name=~\"$test_name\",\n          action=~\"$action\",\n          executor=~\"$executor\"\n        }[$comparison_window])\n      )\n    )\n    /\n    histogram_quantile($stat_percentile,\n      sum by (test_name, action, executor, le) (\n        rate(synth_duration_seconds_bucket{\n          environment_name=\"$environment_name\",\n          test_name=~\"$test_name\",\n          action=~\"$action\",\n          executor=~\"$executor\"\n        }[$comparison_window] offset 1h)\n      )\n    )\n    - 1\n  ) * 100\n)",
           "refId": "A"
         }
       ],
-      "title": "P50 vs 1h ago",
+      "timeFrom": "$comparison_window",
+      "title": "${stat_percentile:text} vs 1h ago",
       "type": "stat"
     },
     {
@@ -1058,11 +1063,12 @@
           "datasource": {
             "type": "prometheus"
           },
-          "expr": "avg(\n  (\n    histogram_quantile(0.50,\n      sum by (test_name, action, executor, le) (\n        rate(synth_duration_seconds_bucket{\n          environment_name=\"$environment_name\",\n          test_name=~\"$test_name\",\n          action=~\"$action\",\n          executor=~\"$executor\"\n        }[5m])\n      )\n    )\n    /\n    histogram_quantile(0.50,\n      sum by (test_name, action, executor, le) (\n        rate(synth_duration_seconds_bucket{\n          environment_name=\"$environment_name\",\n          test_name=~\"$test_name\",\n          action=~\"$action\",\n          executor=~\"$executor\"\n        }[5m] offset 6h)\n      )\n    )\n    - 1\n  ) * 100\n)",
+          "expr": "avg(\n  (\n    histogram_quantile($stat_percentile,\n      sum by (test_name, action, executor, le) (\n        rate(synth_duration_seconds_bucket{\n          environment_name=\"$environment_name\",\n          test_name=~\"$test_name\",\n          action=~\"$action\",\n          executor=~\"$executor\"\n        }[$comparison_window])\n      )\n    )\n    /\n    histogram_quantile($stat_percentile,\n      sum by (test_name, action, executor, le) (\n        rate(synth_duration_seconds_bucket{\n          environment_name=\"$environment_name\",\n          test_name=~\"$test_name\",\n          action=~\"$action\",\n          executor=~\"$executor\"\n        }[$comparison_window] offset 6h)\n      )\n    )\n    - 1\n  ) * 100\n)",
           "refId": "A"
         }
       ],
-      "title": "P50 vs 6h ago",
+      "timeFrom": "$comparison_window",
+      "title": "${stat_percentile:text} vs 6h ago",
       "type": "stat"
     },
     {
@@ -1137,11 +1143,12 @@
           "datasource": {
             "type": "prometheus"
           },
-          "expr": "avg(\n  (\n    histogram_quantile(0.50,\n      sum by (test_name, action, executor, le) (\n        rate(synth_duration_seconds_bucket{\n          environment_name=\"$environment_name\",\n          test_name=~\"$test_name\",\n          action=~\"$action\",\n          executor=~\"$executor\"\n        }[5m])\n      )\n    )\n    /\n    histogram_quantile(0.50,\n      sum by (test_name, action, executor, le) (\n        rate(synth_duration_seconds_bucket{\n          environment_name=\"$environment_name\",\n          test_name=~\"$test_name\",\n          action=~\"$action\",\n          executor=~\"$executor\"\n        }[5m] offset 12h)\n      )\n    )\n    - 1\n  ) * 100\n)",
+          "expr": "avg(\n  (\n    histogram_quantile($stat_percentile,\n      sum by (test_name, action, executor, le) (\n        rate(synth_duration_seconds_bucket{\n          environment_name=\"$environment_name\",\n          test_name=~\"$test_name\",\n          action=~\"$action\",\n          executor=~\"$executor\"\n        }[$comparison_window])\n      )\n    )\n    /\n    histogram_quantile($stat_percentile,\n      sum by (test_name, action, executor, le) (\n        rate(synth_duration_seconds_bucket{\n          environment_name=\"$environment_name\",\n          test_name=~\"$test_name\",\n          action=~\"$action\",\n          executor=~\"$executor\"\n        }[$comparison_window] offset 12h)\n      )\n    )\n    - 1\n  ) * 100\n)",
           "refId": "A"
         }
       ],
-      "title": "P50 vs 12h ago",
+      "timeFrom": "$comparison_window",
+      "title": "${stat_percentile:text} vs 12h ago",
       "type": "stat"
     },
     {
@@ -1216,11 +1223,12 @@
           "datasource": {
             "type": "prometheus"
           },
-          "expr": "avg(\n  (\n    histogram_quantile(0.50,\n      sum by (test_name, action, executor, le) (\n        rate(synth_duration_seconds_bucket{\n          environment_name=\"$environment_name\",\n          test_name=~\"$test_name\",\n          action=~\"$action\",\n          executor=~\"$executor\"\n        }[5m])\n      )\n    )\n    /\n    histogram_quantile(0.50,\n      sum by (test_name, action, executor, le) (\n        rate(synth_duration_seconds_bucket{\n          environment_name=\"$environment_name\",\n          test_name=~\"$test_name\",\n          action=~\"$action\",\n          executor=~\"$executor\"\n        }[5m] offset 24h)\n      )\n    )\n    - 1\n  ) * 100\n)",
+          "expr": "avg(\n  (\n    histogram_quantile($stat_percentile,\n      sum by (test_name, action, executor, le) (\n        rate(synth_duration_seconds_bucket{\n          environment_name=\"$environment_name\",\n          test_name=~\"$test_name\",\n          action=~\"$action\",\n          executor=~\"$executor\"\n        }[$comparison_window])\n      )\n    )\n    /\n    histogram_quantile($stat_percentile,\n      sum by (test_name, action, executor, le) (\n        rate(synth_duration_seconds_bucket{\n          environment_name=\"$environment_name\",\n          test_name=~\"$test_name\",\n          action=~\"$action\",\n          executor=~\"$executor\"\n        }[$comparison_window] offset 24h)\n      )\n    )\n    - 1\n  ) * 100\n)",
           "refId": "A"
         }
       ],
-      "title": "P50 vs 24h ago",
+      "timeFrom": "$comparison_window",
+      "title": "${stat_percentile:text} vs 24h ago",
       "type": "stat"
     },
     {
@@ -1295,11 +1303,12 @@
           "datasource": {
             "type": "prometheus"
           },
-          "expr": "avg(\n  (\n    histogram_quantile(0.50,\n      sum by (test_name, action, executor, le) (\n        rate(synth_duration_seconds_bucket{\n          environment_name=\"$environment_name\",\n          test_name=~\"$test_name\",\n          action=~\"$action\",\n          executor=~\"$executor\"\n        }[5m])\n      )\n    )\n    /\n    histogram_quantile(0.50,\n      sum by (test_name, action, executor, le) (\n        rate(synth_duration_seconds_bucket{\n          environment_name=\"$environment_name\",\n          test_name=~\"$test_name\",\n          action=~\"$action\",\n          executor=~\"$executor\"\n        }[5m] offset 48h)\n      )\n    )\n    - 1\n  ) * 100\n)",
+          "expr": "avg(\n  (\n    histogram_quantile($stat_percentile,\n      sum by (test_name, action, executor, le) (\n        rate(synth_duration_seconds_bucket{\n          environment_name=\"$environment_name\",\n          test_name=~\"$test_name\",\n          action=~\"$action\",\n          executor=~\"$executor\"\n        }[$comparison_window])\n      )\n    )\n    /\n    histogram_quantile($stat_percentile,\n      sum by (test_name, action, executor, le) (\n        rate(synth_duration_seconds_bucket{\n          environment_name=\"$environment_name\",\n          test_name=~\"$test_name\",\n          action=~\"$action\",\n          executor=~\"$executor\"\n        }[$comparison_window] offset 48h)\n      )\n    )\n    - 1\n  ) * 100\n)",
           "refId": "A"
         }
       ],
-      "title": "P50 vs 48h ago",
+      "timeFrom": "$comparison_window",
+      "title": "${stat_percentile:text} vs 48h ago",
       "type": "stat"
     },
     {
@@ -1374,11 +1383,12 @@
           "datasource": {
             "type": "prometheus"
           },
-          "expr": "avg(\n  (\n    histogram_quantile(0.50,\n      sum by (test_name, action, executor, le) (\n        rate(synth_duration_seconds_bucket{\n          environment_name=\"$environment_name\",\n          test_name=~\"$test_name\",\n          action=~\"$action\",\n          executor=~\"$executor\"\n        }[5m])\n      )\n    )\n    /\n    histogram_quantile(0.50,\n      sum by (test_name, action, executor, le) (\n        rate(synth_duration_seconds_bucket{\n          environment_name=\"$environment_name\",\n          test_name=~\"$test_name\",\n          action=~\"$action\",\n          executor=~\"$executor\"\n        }[5m] offset 7d)\n      )\n    )\n    - 1\n  ) * 100\n)",
+          "expr": "avg(\n  (\n    histogram_quantile($stat_percentile,\n      sum by (test_name, action, executor, le) (\n        rate(synth_duration_seconds_bucket{\n          environment_name=\"$environment_name\",\n          test_name=~\"$test_name\",\n          action=~\"$action\",\n          executor=~\"$executor\"\n        }[$comparison_window])\n      )\n    )\n    /\n    histogram_quantile($stat_percentile,\n      sum by (test_name, action, executor, le) (\n        rate(synth_duration_seconds_bucket{\n          environment_name=\"$environment_name\",\n          test_name=~\"$test_name\",\n          action=~\"$action\",\n          executor=~\"$executor\"\n        }[$comparison_window] offset 7d)\n      )\n    )\n    - 1\n  ) * 100\n)",
           "refId": "A"
         }
       ],
-      "title": "P50 vs 7d ago",
+      "timeFrom": "$comparison_window",
+      "title": "${stat_percentile:text} vs 7d ago",
       "type": "stat"
     },
     {
@@ -1490,12 +1500,12 @@
           "datasource": {
             "type": "prometheus"
           },
-          "expr": "(\n  histogram_quantile(0.50,\n    sum by (test_name, action, executor, le) (\n      rate(synth_duration_seconds_bucket{\n        environment_name=\"$environment_name\",\n        test_name=~\"$test_name\",\n        action=~\"$action\",\n        executor=~\"$executor\"\n      }[$__rate_interval])\n    )\n  )\n  /\n  histogram_quantile(0.50,\n    sum by (test_name, action, executor, le) (\n      rate(synth_duration_seconds_bucket{\n        environment_name=\"$environment_name\",\n        test_name=~\"$test_name\",\n        action=~\"$action\",\n        executor=~\"$executor\"\n      }[$__rate_interval] offset 1h)\n    )\n  )\n  - 1\n) * 100",
+          "expr": "(\n  histogram_quantile($stat_percentile,\n    sum by (test_name, action, executor, le) (\n      rate(synth_duration_seconds_bucket{\n        environment_name=\"$environment_name\",\n        test_name=~\"$test_name\",\n        action=~\"$action\",\n        executor=~\"$executor\"\n      }[$__rate_interval])\n    )\n  )\n  /\n  histogram_quantile($stat_percentile,\n    sum by (test_name, action, executor, le) (\n      rate(synth_duration_seconds_bucket{\n        environment_name=\"$environment_name\",\n        test_name=~\"$test_name\",\n        action=~\"$action\",\n        executor=~\"$executor\"\n      }[$__rate_interval] offset 1h)\n    )\n  )\n  - 1\n) * 100",
           "legendFormat": "{{test_name}} - {{action}} (vs 1h)",
           "refId": "A"
         }
       ],
-      "title": "Rolling P50 Degradation vs 1h Ago",
+      "title": "Rolling ${stat_percentile:text} Degradation vs 1h Ago",
       "type": "timeseries"
     },
     {
@@ -1594,12 +1604,12 @@
           "datasource": {
             "type": "prometheus"
           },
-          "expr": "(\n  histogram_quantile(0.50,\n    sum by (test_name, action, executor, le) (\n      rate(synth_duration_seconds_bucket{\n        environment_name=\"$environment_name\",\n        test_name=~\"$test_name\",\n        action=~\"$action\",\n        executor=~\"$executor\"\n      }[$__rate_interval])\n    )\n  )\n  /\n  histogram_quantile(0.50,\n    sum by (test_name, action, executor, le) (\n      rate(synth_duration_seconds_bucket{\n        environment_name=\"$environment_name\",\n        test_name=~\"$test_name\",\n        action=~\"$action\",\n        executor=~\"$executor\"\n      }[$__rate_interval] offset 24h)\n    )\n  )\n  - 1\n) * 100",
+          "expr": "(\n  histogram_quantile($stat_percentile,\n    sum by (test_name, action, executor, le) (\n      rate(synth_duration_seconds_bucket{\n        environment_name=\"$environment_name\",\n        test_name=~\"$test_name\",\n        action=~\"$action\",\n        executor=~\"$executor\"\n      }[$__rate_interval])\n    )\n  )\n  /\n  histogram_quantile($stat_percentile,\n    sum by (test_name, action, executor, le) (\n      rate(synth_duration_seconds_bucket{\n        environment_name=\"$environment_name\",\n        test_name=~\"$test_name\",\n        action=~\"$action\",\n        executor=~\"$executor\"\n      }[$__rate_interval] offset 24h)\n    )\n  )\n  - 1\n) * 100",
           "legendFormat": "{{test_name}} - {{action}} (vs 24h)",
           "refId": "A"
         }
       ],
-      "title": "Rolling P50 Degradation vs 24h Ago",
+      "title": "Rolling ${stat_percentile:text} Degradation vs 24h Ago",
       "type": "timeseries"
     },
     {
@@ -1686,7 +1696,7 @@
           "datasource": {
             "type": "prometheus"
           },
-          "expr": "(\n  histogram_quantile(0.50,\n    sum by (test_name, action, executor, le) (\n      rate(synth_duration_seconds_bucket{\n        environment_name=\"$environment_name\",\n        test_name=~\"$test_name\",\n        action=~\"$action\",\n        executor=~\"$executor\"\n      }[5m])\n    )\n  )\n  /\n  histogram_quantile(0.50,\n    sum by (test_name, action, executor, le) (\n      rate(synth_duration_seconds_bucket{\n        environment_name=\"$environment_name\",\n        test_name=~\"$test_name\",\n        action=~\"$action\",\n        executor=~\"$executor\"\n      }[5m] offset 1h)\n    )\n  )\n  - 1\n) * 100",
+          "expr": "(\n  histogram_quantile(0.50,\n    sum by (test_name, action, executor, le) (\n      rate(synth_duration_seconds_bucket{\n        environment_name=\"$environment_name\",\n        test_name=~\"$test_name\",\n        action=~\"$action\",\n        executor=~\"$executor\"\n      }[$comparison_window])\n    )\n  )\n  /\n  histogram_quantile(0.50,\n    sum by (test_name, action, executor, le) (\n      rate(synth_duration_seconds_bucket{\n        environment_name=\"$environment_name\",\n        test_name=~\"$test_name\",\n        action=~\"$action\",\n        executor=~\"$executor\"\n      }[$comparison_window] offset 1h)\n    )\n  )\n  - 1\n) * 100",
           "format": "time_series",
           "legendFormat": "{{test_name}}-{{action}}-{{executor}}",
           "refId": "A"
@@ -1824,7 +1834,7 @@
           "datasource": {
             "type": "prometheus"
           },
-          "expr": "histogram_quantile(0.50,\n  sum by (test_name, action, executor, le) (\n    rate(synth_duration_seconds_bucket{\n      environment_name=\"$environment_name\",\n      test_name=~\"$test_name\",\n      action=~\"$action\",\n      executor=~\"$executor\"\n    }[5m])\n  )\n)",
+          "expr": "histogram_quantile(0.50,\n  sum by (test_name, action, executor, le) (\n    rate(synth_duration_seconds_bucket{\n      environment_name=\"$environment_name\",\n      test_name=~\"$test_name\",\n      action=~\"$action\",\n      executor=~\"$executor\"\n    }[$comparison_window])\n  )\n)",
           "format": "table",
           "instant": true,
           "refId": "P50"
@@ -1833,7 +1843,7 @@
           "datasource": {
             "type": "prometheus"
           },
-          "expr": "histogram_quantile(0.90,\n  sum by (test_name, action, executor, le) (\n    rate(synth_duration_seconds_bucket{\n      environment_name=\"$environment_name\",\n      test_name=~\"$test_name\",\n      action=~\"$action\",\n      executor=~\"$executor\"\n    }[5m])\n  )\n)",
+          "expr": "histogram_quantile(0.90,\n  sum by (test_name, action, executor, le) (\n    rate(synth_duration_seconds_bucket{\n      environment_name=\"$environment_name\",\n      test_name=~\"$test_name\",\n      action=~\"$action\",\n      executor=~\"$executor\"\n    }[$comparison_window])\n  )\n)",
           "format": "table",
           "instant": true,
           "refId": "P90"
@@ -1842,7 +1852,7 @@
           "datasource": {
             "type": "prometheus"
           },
-          "expr": "histogram_quantile(0.95,\n  sum by (test_name, action, executor, le) (\n    rate(synth_duration_seconds_bucket{\n      environment_name=\"$environment_name\",\n      test_name=~\"$test_name\",\n      action=~\"$action\",\n      executor=~\"$executor\"\n    }[5m])\n  )\n)",
+          "expr": "histogram_quantile(0.95,\n  sum by (test_name, action, executor, le) (\n    rate(synth_duration_seconds_bucket{\n      environment_name=\"$environment_name\",\n      test_name=~\"$test_name\",\n      action=~\"$action\",\n      executor=~\"$executor\"\n    }[$comparison_window])\n  )\n)",
           "format": "table",
           "instant": true,
           "refId": "P95"
@@ -1851,7 +1861,7 @@
           "datasource": {
             "type": "prometheus"
           },
-          "expr": "sum by (test_name, action, executor) (\n  rate(synth_operation_success_total{\n    environment_name=\"$environment_name\",\n    test_name=~\"$test_name\",\n    action=~\"$action\",\n    executor=~\"$executor\",\n    status=\"success\"\n  }[5m])\n) / sum by (test_name, action, executor) (\n  rate(synth_operation_success_total{\n    environment_name=\"$environment_name\",\n    test_name=~\"$test_name\",\n    action=~\"$action\",\n    executor=~\"$executor\"\n  }[5m])\n) * 100",
+          "expr": "sum by (test_name, action, executor) (\n  rate(synth_operation_success_total{\n    environment_name=\"$environment_name\",\n    test_name=~\"$test_name\",\n    action=~\"$action\",\n    executor=~\"$executor\",\n    status=\"success\"\n  }[$comparison_window])\n) / sum by (test_name, action, executor) (\n  rate(synth_operation_success_total{\n    environment_name=\"$environment_name\",\n    test_name=~\"$test_name\",\n    action=~\"$action\",\n    executor=~\"$executor\"\n  }[$comparison_window])\n) * 100",
           "format": "table",
           "instant": true,
           "refId": "SuccessRate"
@@ -1860,7 +1870,7 @@
           "datasource": {
             "type": "prometheus"
           },
-          "expr": "sum by (test_name, action, executor) (\n  rate(synth_operation_count_total{\n    environment_name=\"$environment_name\",\n    test_name=~\"$test_name\",\n    action=~\"$action\",\n    executor=~\"$executor\"\n  }[5m])\n) * 60",
+          "expr": "sum by (test_name, action, executor) (\n  rate(synth_operation_count_total{\n    environment_name=\"$environment_name\",\n    test_name=~\"$test_name\",\n    action=~\"$action\",\n    executor=~\"$executor\"\n  }[$comparison_window])\n) * 60",
           "format": "table",
           "instant": true,
           "refId": "OpsPerMin"
@@ -2520,35 +2530,77 @@
       },
       {
         "current": {
-          "text": [
-            "p50"
-          ],
-          "value": [
-            "p50"
-          ]
+          "selected": true,
+          "text": "5m",
+          "value": "5m"
         },
-        "includeAll": true,
-        "label": "Percentile",
-        "multi": true,
-        "name": "percentile",
+        "description": "Time window for degradation comparison calculations",
+        "includeAll": false,
+        "label": "Comparison Window",
+        "name": "comparison_window",
         "options": [
           {
             "selected": true,
-            "text": "p50",
-            "value": "p50"
+            "text": "5m",
+            "value": "5m"
           },
           {
             "selected": false,
-            "text": "p95",
-            "value": "p95"
+            "text": "10m",
+            "value": "10m"
           },
           {
             "selected": false,
-            "text": "p99",
-            "value": "p99"
+            "text": "15m",
+            "value": "15m"
+          },
+          {
+            "selected": false,
+            "text": "30m",
+            "value": "30m"
+          },
+          {
+            "selected": false,
+            "text": "45m",
+            "value": "45m"
+          },
+          {
+            "selected": false,
+            "text": "1h",
+            "value": "1h"
           }
         ],
-        "query": "p50,p95,p99",
+        "query": "5m,10m,15m,30m,45m,1h",
+        "type": "custom"
+      },
+      {
+        "current": {
+          "selected": true,
+          "text": "P50",
+          "value": "0.50"
+        },
+        "description": "Percentile for degradation stat panels",
+        "includeAll": false,
+        "label": "Stat Percentile",
+        "name": "stat_percentile",
+        "options": [
+          {
+            "selected": true,
+            "text": "P50",
+            "value": "0.50"
+          },
+          {
+            "selected": false,
+            "text": "P95",
+            "value": "0.95"
+          },
+          {
+            "selected": false,
+            "text": "P99",
+            "value": "0.99"
+          }
+        ],
+        "query": "P50 : 0.50,P95 : 0.95,P99 : 0.99",
         "type": "custom"
       },
       {
